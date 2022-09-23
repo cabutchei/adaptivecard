@@ -1,4 +1,4 @@
-from entities.mixin import Mixin
+from mixin import Mixin
 from typing import Union, List
 
 
