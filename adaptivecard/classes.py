@@ -1,8 +1,6 @@
 from adaptivecard.mixin import Mixin
 from typing import Union, List
 
-print(Mixin)
-
 
 class Content:
     """Content é o elemento que recebe o AdaptiveCard e é adicionado à lista atachments, atributo de Message"""
