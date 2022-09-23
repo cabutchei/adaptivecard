@@ -1,5 +1,7 @@
-from mixin import Mixin
+from adaptivecard.mixin import Mixin
 from typing import Union, List
+
+print(Mixin)
 
 
 class Content:
