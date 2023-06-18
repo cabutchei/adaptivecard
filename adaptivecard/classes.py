@@ -1,9 +1,59 @@
-from mixin import Mixin
-from typing import Union, List, Optional, Any
+from adaptivecard.mixin import Mixin
+from typing import Union, List, Optional, Any, Collection
 
 
-class CardElement():
+class Element():
     pass
+
+
+class TableRow(Mixin):
+    def __init__(self, cells: Union["TableCell", Collection["TableCell"]]):
+        if not self.is_collection(cells):
+            raise TypeError("'cells' attribute must be a collection of some kind")
+        if isinstance(cells, TableCell):
+            cells = [cells]
+        else:
+            cells = list(cells)
+        self.type = "TableRow"
+        self.cells = cells
+        self.json_fields = ("type", "cells")
+
+    def __len__(self):
+        return len(self.cells)
+
+    def add_cell(self, cell: "TableCell"):
+        if not isinstance(cell, TableCell):
+            raise TypeError("'cell' attribute must be of type 'TableCell'")
+        self.cells.append(cell)
+
+
+class TableCell(Mixin):
+    def __init__(self,
+                 items: Optional[list] = None,
+                 selectAction = None,   # definir mais tarde
+                 style: Optional[str] = None,
+                 verticalAlignment: Optional[str] = None,
+                 bleed: Optional[bool] = None,
+                 backgroundImage: Optional[str] = None,
+                 minHeight: Optional[str] = None,
+                 rtl: Optional[bool] = None):
+
+        if items is None:
+            items = []
+        self.type = "TableCell"
+        self.items = items
+        self.selectAction = selectAction
+        self.items = items
+        self.style = style
+        self.verticalAlignment = verticalAlignment
+        self.bleed = bleed
+        self.backgroundImage = backgroundImage
+        self.minHeight = minHeight
+        self.rtl = rtl
+        self.json_fields = ('type', 'items', 'selectAction', 'style', 'verticalAlignment', 'bleed', 'backgroundImage', 'minHeight', 'rtl')
+
+    def add_to_items(self, element: Element):
+        self.items.append(element)
 
 
 class Content:
@@ -15,11 +65,13 @@ class Content:
 
 class Message(Mixin):
     """"Estrutura final do card tal como se requer para envio a um canal do Teams"""
-    def __init__(self, attachments: Optional[List["Content"]] = None):
+    def __init__(self, attachments: Optional[Collection["Content"]] = None):
         self.type = "message"
         if attachments is None:
             attachments = []
-        self.attachments = attachments
+        if not self.is_collection(attachments):
+            raise TypeError("'attachments' attribute must be a collection of some kind")
+        self.attachments = list(attachments)
 
     def attach(self, content):
         self.attachments.append(content)
@@ -29,9 +81,9 @@ class Message(Mixin):
 
 class AdaptiveCard(Mixin):
     """O template principal do card"""  # Essas descrições hão de ficar mais detalhadas à medida que eu desenvolver a lib e sua documentação
-    def __init__(self, version="1.2",
+    def __init__(self, version: str = "1.2",
                  schema: str = "http://adaptivecards.io/schemas/adaptive-card.json",
-                 body: Optional[List[Union["ColumnSet", "Container", "TextBlock", "Image"]]] = None,
+                 body: Optional[Collection[Element]] = None,
                  fallbackText: Optional[str] = None,
                  backgroundImage: Optional[str] = None,
                  minHeight: Optional[str] = None,
@@ -42,11 +94,13 @@ class AdaptiveCard(Mixin):
 
         if body is None:
             body = []
-
+        if not self.is_collection(body):
+            raise TypeError("'body' attribute must be a collection of some kind")
+        
         self.type = "AdaptiveCard"
-        self.version = version
+        self.version = version  
         self.schema = schema
-        self.body = body
+        self.body = list(body)
         self.fallbackText = fallbackText
         self.backgroundImage = backgroundImage
         self.minHeight = minHeight
@@ -54,7 +108,8 @@ class AdaptiveCard(Mixin):
         self.speak = speak
         self.lang = lang
         self.verticalContentAlignment = verticalContentAlignment
-        self.json_fields = frozenset(self.get_local_vars())
+        self.json_fields = ('type', 'version', 'schema', 'body', 'fallbackText', 'backgroundImage',
+                                      'minHeight', 'rtl', 'speak', 'lang', 'verticalContentAlignment', 'actions')
 
     @property
     def empty(self):
@@ -63,13 +118,19 @@ class AdaptiveCard(Mixin):
     def add_to_body(self, card_element):
         self.body.append(card_element)
 
+    def add_action(self, action):
+        if not hasattr(self, 'actions'):
+            self.actions = []
+        self.actions.append(action)
+
     def to_message(self):
         content = Content(card=self)
         msg = Message(attachments=[content])
         return msg
 
     def __setattr__(self, __name: str, __value: Any) -> None:
-        if __name == 'verticalContentAlignment' and __value not in (allowed_values := ("top", "center", "bottom")):
+        if __name == 'verticalContentAlignment' and isinstance(__value, str) \
+                and __value not in (allowed_values := ("top", "center", "bottom")):
             raise AttributeError(f"'{__name}' atribute can only take either of the following values: {', '.join(allowed_values)}")
         return super().__setattr__(__name, __value)
 
@@ -104,6 +165,8 @@ class Container(Mixin):
         self.separator = separator
         self.id = id
         self.isVisible = isVisible
+        self.json_fields = ('type', 'items', 'style', 'verticalContentAlignment', 'bleed', 'minHeight', 'rtl',
+                                      'height', 'separator', 'id', 'isVisible')
 
     @property
     def empty(self):
@@ -124,9 +187,9 @@ class Container(Mixin):
         return super().__setattr__(__name, __value)
 
 
-class ColumnSet(Mixin, CardElement):
+class ColumnSet(Mixin, Element):
     """ColumnSet define um grupo de colunas"""
-    def __init__(self, columns: Optional[List["Column"]] = None,
+    def __init__(self, columns: Optional[Collection["Column"]] = None,
                  style: Optional[str] = None,
                  bleed: Optional[bool] = None,
                  minHeight: Optional[str] = None,
@@ -139,9 +202,11 @@ class ColumnSet(Mixin, CardElement):
 
         if columns is None:
             columns = []
+        if not self.is_collection(columns):
+            raise TypeError("'columns' attribute must be a collection of some kind")
 
         self.type = 'ColumnSet'
-        self.columns = columns
+        self.columns = list(columns)
         self.style = style
         self.bleed = bleed
         self.minHeight = minHeight
@@ -151,15 +216,17 @@ class ColumnSet(Mixin, CardElement):
         self.spacing = spacing
         self.id = id_
         self.isVisible = isVisible
+        self.json_fields = ('type', 'columns', 'style', 'bleed', 'minHeight', 'horizontalAlignment', 'height',
+                                      'separator', 'spacig', 'id', 'isVisible')
 
     def add_to_columns(self, column_element):
         self.columns.append(column_element)
 
 
-class Column(Mixin, CardElement):
+class Column(Mixin, Element):
     """O contâiner Column define um elemento de coluna, que é parte de um ColumnSet."""
     def __init__(self,
-                 items: Optional[List[Union["Image", "TextBlock"]]] = None,
+                 items: Optional[Collection[Union["Image", "TextBlock"]]] = None,
                  backgroundImage=None,
                  bleed: Optional[bool] = None,
                  fallback: Optional["Column"] = None,
@@ -175,9 +242,11 @@ class Column(Mixin, CardElement):
 
         if items is None:
             items = []
+        if self.is_collection(items):
+            raise TypeError("'items' must be a collections of some kind")
 
         self.type = "Column"
-        self.items = items
+        self.items = list(items)
         self.backgroundImage = backgroundImage
         self.bleed = bleed
         self.fallback = fallback
@@ -190,6 +259,9 @@ class Column(Mixin, CardElement):
         self.width = width
         self.id = id_
         self.isVisible = isVisible
+        self.json_fields = ('type', 'items', 'backgroundImage', 'bleed', 'fallback', 'minHeight', 'rtl', 'separator',
+                                      'spacing', 'style', 'verticalContentAlignment', 'rtl', 'width', 'id', 'isVisible')
+
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         return super().__setattr__(__name, __value)
@@ -198,10 +270,14 @@ class Column(Mixin, CardElement):
         self.items.append(card_element)
 
 
-class Table(Mixin, CardElement):
-    def __init__(self, columns: Optional[List[dict]], rows: Optional[List[dict]],
-                 firstRowAsHeader: Optional[bool], showGridLines: Optional[bool],
-                 gridStyle: Optional[str], horizontalCellContentAlignment: Optional[str] = None,
+class Table(Mixin, Element):
+    def __init__(self,
+                 columns: Collection[int],
+                 rows: List[TableRow],
+                 firstRowAsHeader: Optional[bool] = None,
+                 showGridLines: Optional[bool] = None,
+                 gridStyle: Optional[str] = None,
+                 horizontalCellContentAlignment: Optional[str] = None,
                  verticalCellContentAlignment: Optional[str] = None,
                  fallback: Optional[Union["ColumnSet", "Container", "Image", "Table"]] = None,
                  height: Optional[str] = None,
@@ -211,7 +287,15 @@ class Table(Mixin, CardElement):
                  isVisible: Optional[bool] = None):
 
         self.type = "Table"
-        self.columns = columns
+        if len(columns) == 0:
+            raise AttributeError("Number of columns cannot be zero")
+        if not self.is_collection(columns):
+            raise TypeError("'columns' attribute must be a collection of some kind")
+        self._columns = list(columns)
+        if len(rows) == 0:
+            raise Exception
+        if not all(len(row) == len(columns) for row in rows):
+            raise Exception("The number of cells must match the number of columns in all rows")
         self.rows = rows
         self.firstRowAsHeader = firstRowAsHeader
         self.showGridLines = showGridLines
@@ -224,25 +308,21 @@ class Table(Mixin, CardElement):
         self.spacing = spacing
         self.id = id_
         self.isVisible = isVisible
+        self.json_fields = ('type', 'columns', 'rows', 'firstRowAsHeader', 'showGridLines', 'gridStyle',
+                                      'horizontalCellContentAlignment', 'verticalContentAlignment', 'fallback', 'height',
+                                      'separator', 'spacing', 'id', 'isVisible')
+    
+    @property
+    def columns(self):
+        return [{"width": value} for value in self._columns]
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         return super().__setattr__(__name, __value)
 
-
-class TableCell(Mixin):
-    def __init__(self, items: Optional[Union["ColumnSet", "Container", "Image", "Table"]] = None,
-                 selectAction = None,
-                 style: Optional[str] = None,
-                 verticalContentAlignment: Optional[str] = None,
-                 bleed: Optional[bool] = None,
-                 backgroundImage: Optional[str] = None,
-                 minHeight: Optional[str] = None,
-                 rtl: Optional[bool] = None):
-        pass
 # -------------------------Card Elements--------------------------- #
 
 
-class TextBlock(Mixin, CardElement):
+class TextBlock(Mixin, Element):
     """Elemento de texto"""
     def __init__(self,
                  text: str = "",
@@ -279,9 +359,8 @@ class TextBlock(Mixin, CardElement):
         self.spacing = spacing
         self.id = id_
         self.isVisible = isVisible
-
-
-
+        self.json_fields = ['type', 'text', 'color', 'fontType', 'horizontalAlignment', 'isSubtle', 'maxLines', 'size', 'weight', 'wrap', 'style', 'fallback',
+                            'height', 'separator', 'spacing', 'id', 'isVisible']
 
     def __repr__(self):
         return f"{self.__class__.__name__}(text={self.text})"
@@ -299,3 +378,4 @@ class Image(Mixin):
                  horizontalAlignment: Optional[str] = None,
                  selectAction: Optional[str] = None):
         self.type = "Image"
+        self.json_fields = ['url', 'altText', 'backgroundColor', 'height', 'horizontalAlignment', 'selectAction']
