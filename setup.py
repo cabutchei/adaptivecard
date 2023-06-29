@@ -1,11 +1,8 @@
-from re import L
 from setuptools import setup, find_packages
-import codecs
-import os
 
-VERSION = '0.0.6'
+VERSION = '0.0.8'
 DESCRIPTION = 'Microsoft Adaptive Cards'
-LONG_DESCRIPTION = 'A package that helps you create adaptive cards.'
+LONG_DESCRIPTION = 'A package that helps you design adaptive cards in an object-oriented manner.'
 
 setup(
     name="adaptivecard",
@@ -16,6 +13,9 @@ setup(
     long_description_content_type="text/markdown",
     long_description=LONG_DESCRIPTION,
     packages=find_packages(),
+    requires=[
+        'typeguard'
+    ],
     keywords=['python', 'card', 'adaptive card', 'microsoft'],
     classifiers=[
         "Development Status :: 1 - Planning",
