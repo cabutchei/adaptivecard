@@ -13,7 +13,7 @@ setup(
     long_description_content_type="text/markdown",
     long_description=LONG_DESCRIPTION,
     packages=find_packages(),
-    requires=[
+    install_requires=[
         'typeguard'
     ],
     keywords=['python', 'adaptive', 'card', 'adaptive card', 'microsoft'],
