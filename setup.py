@@ -18,8 +18,9 @@ setup(
     ],
     keywords=['python', 'adaptive', 'card', 'adaptive card', 'microsoft'],
     classifiers=[
-        "Development Status :: 1 - Planning",
+        "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License", 
         "Programming Language :: Python :: 3",
         "Operating System :: Unix",
         "Operating System :: MacOS :: MacOS X",
