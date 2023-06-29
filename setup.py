@@ -16,7 +16,7 @@ setup(
     requires=[
         'typeguard'
     ],
-    keywords=['python', 'card', 'adaptive card', 'microsoft'],
+    keywords=['python', 'adaptive', 'card', 'adaptive card', 'microsoft'],
     classifiers=[
         "Development Status :: 1 - Planning",
         "Intended Audience :: Developers",
