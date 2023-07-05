@@ -1,4 +1,5 @@
-from typing import Any, Optional, Union, Literal, Sequence, List, get_type_hints
+from typing import Any, Optional, Union, Sequence, List, get_type_hints
+from typing_extensions import Literal
 from adaptivecard._base_types import Element, Action, ISelectAction
 from adaptivecard.mixin import Mixin
 from tabulate import tabulate
@@ -189,13 +190,16 @@ class TableRow(Mixin, Sequence):
             if not isinstance(cell, TableCell):
                 cells[i] = TableCell(cell)
         self.cells = cells
-        self.json_fields = ("type", "cells")
+        self.style = style
+        self.json_fields = ("type", "cells", "style")
     def __getitem__(self, __i):
         if isinstance(__i, slice):
             return self.__class__(cells=self.cells[__i])
         return self.cells.__getitem__(__i)
     def __setitem__(self, __key, __value):
         self.cells.__setitem__(__key, TableCell(__value))
+    def __add__(self, __value):
+        return self.__class__(self.cells + __value.cells)
     def __len__(self):
         return len(self.cells)
     def __repr__(self):

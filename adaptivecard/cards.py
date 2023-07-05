@@ -1,4 +1,5 @@
-from typing import Any, Optional, Union, Sequence, Literal
+from typing import Any, Optional, Union, Sequence
+from typing_extensions import Literal
 from adaptivecard.mixin import Mixin
 from adaptivecard._base_types import Element, Action
 
