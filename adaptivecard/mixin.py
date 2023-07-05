@@ -14,7 +14,7 @@ class Mixin:    # essa é uma classe do tipo mixin. Não tem funcionalidade pró
         """
 
         def get_json_dic(obj):
-            return {key: value for key in obj.json_fields if hasattr(obj, key) and (value := getattr(obj, key)) is not None}
+            return {key: getattr(obj, key) for key in obj.json_fields if hasattr(obj, key) and getattr(obj, key) is not None}
 
         # possível problema de circular reference ao passar o mesmo objeto em dois lugares diferentes do card. Averiguar depois.
         dic = json.loads(json.dumps(self, default=lambda obj: get_json_dic(obj)))
@@ -26,7 +26,8 @@ class Mixin:    # essa é uma classe do tipo mixin. Não tem funcionalidade pró
         return False
 
     def __setattr__(self, __name: str, __value: Any) -> None:
-        if __name in (type_hints := get_type_hints(self.__init__)):
+        type_hints = get_type_hints(self.__init__)
+        if __name in type_hints:
                 check_type(__value, type_hints[__name])
         if __name in self.protected_attributes and hasattr(self, __name):
             raise AttributeError(f"Can't set '{__name}' attribute")
