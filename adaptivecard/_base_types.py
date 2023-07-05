@@ -5,6 +5,9 @@ class Element:
 class Action:
     pass
 
+class ISelectAction:
+    pass
+
 class BaseTableRow:
     pass
 
