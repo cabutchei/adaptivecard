@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.0.9'
+VERSION = '0.1.0'
 DESCRIPTION = 'Microsoft Adaptive Cards'
 LONG_DESCRIPTION = 'A package that helps you design adaptive cards in an object-oriented manner.'
 
@@ -14,7 +14,8 @@ setup(
     long_description=LONG_DESCRIPTION,
     packages=find_packages(),
     install_requires=[
-        'typeguard'
+        'typeguard',
+        'tabulate'
     ],
     keywords=['python', 'adaptive', 'card', 'adaptive card', 'microsoft'],
     classifiers=[
