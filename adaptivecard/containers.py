@@ -10,6 +10,8 @@ from adaptivecard.card_elements import TextBlock
 
 class Container(Mixin, Element):
     """Um contâiner é um agrupamento de elementos"""
+    __slots__ = ('type', 'items', 'style', 'verticalContentAlignment', 'bleed', 'minHeight', 'rtl',
+                                      'height', 'separator', 'id', 'isVisible')
     def __init__(self,
                  items: Optional[Union[Element, Sequence[Element]]] = None,
                  style: Optional[Literal["default", "emphasis", "good", "attention", "warning", "accent"]] = None,
@@ -35,8 +37,6 @@ class Container(Mixin, Element):
         self.spacing = spacing
         self.id = id
         self.isVisible = isVisible
-        self.json_fields = ('type', 'items', 'style', 'verticalContentAlignment', 'bleed', 'minHeight', 'rtl',
-                                      'height', 'separator', 'id', 'isVisible')
 
     @property
     def empty(self):
@@ -62,6 +62,8 @@ class Container(Mixin, Element):
 
 class ColumnSet(Mixin, Element):
     """ColumnSet define um grupo de colunas"""
+    __slots__ = ('type', 'columns', 'style', 'bleed', 'minHeight', 'horizontalAlignment', 'height',
+                                      'separator', 'spacing', 'id', 'isVisible')
     def __init__(self, columns: Optional[Sequence["Column"]] = None,
                  style: Optional[Literal["default", "emphasis", "good", "attention", "warning", "accent"]] = None,
                  bleed: Optional[bool] = None,
@@ -75,8 +77,6 @@ class ColumnSet(Mixin, Element):
 
         if columns is None:
             columns = []
-        if not self.is_sequence(columns):
-            raise TypeError("'columns' attribute must be a Sequence of some kind")
 
         self.type = 'ColumnSet'
         self.columns = list(columns)
@@ -89,8 +89,6 @@ class ColumnSet(Mixin, Element):
         self.spacing = spacing
         self.id = id_
         self.isVisible = isVisible
-        self.json_fields = ('type', 'columns', 'style', 'bleed', 'minHeight', 'horizontalAlignment', 'height',
-                                      'separator', 'spacig', 'id', 'isVisible')
 
     def add_to_columns(self, column_element):
         self.columns.append(column_element)
@@ -98,6 +96,8 @@ class ColumnSet(Mixin, Element):
 
 class Column(Mixin, Element):
     """O contâiner Column define um elemento de coluna, que é parte de um ColumnSet."""
+    __slots__ = ('type', 'items', 'backgroundImage', 'bleed', 'fallback', 'minHeight', 'rtl', 'separator',
+                                      'spacing', 'style', 'verticalContentAlignment', 'rtl', 'width', 'id', 'isVisible')
     def __init__(self,
                  items: Optional[Sequence[Element]] = None,
                  backgroundImage=None,
@@ -110,13 +110,11 @@ class Column(Mixin, Element):
                  style: Optional[str] = None,
                  verticalContentAlignment: Optional[str] = None,
                  width: Optional[Union[str, int]] = None,
-                 id_: Optional[str] = None,
+                 id: Optional[str] = None,
                  isVisible: Optional[bool] = None):
 
         if items is None:
             items = []
-        if not self.is_sequence(items):
-            raise TypeError(f"'items' must be a Sequence of some kind, not {type(items)}")
 
         self.type = "Column"
         self.items = list(items)
@@ -130,16 +128,15 @@ class Column(Mixin, Element):
         self.style = style
         self.verticalContentAlignment = verticalContentAlignment
         self.width = width
-        self.id = id_
+        self.id = id
         self.isVisible = isVisible
-        self.json_fields = ('type', 'items', 'backgroundImage', 'bleed', 'fallback', 'minHeight', 'rtl', 'separator',
-                                      'spacing', 'style', 'verticalContentAlignment', 'rtl', 'width', 'id', 'isVisible')
 
     def add_to_items(self, card_element):
         self.items.append(card_element)
 
 
 class TableCell(Mixin):
+    __slots__ = ('type', 'items', 'selectAction', 'style', 'verticalAlignment', 'bleed', 'backgroundImage', 'minHeight', 'rtl')
     def __init__(self,
                  items: Optional[Union[Any, Sequence[Any]]] = None,
                  selectAction: Optional[ISelectAction] = None,
@@ -171,7 +168,6 @@ class TableCell(Mixin):
         self.backgroundImage = backgroundImage
         self.minHeight = minHeight
         self.rtl = rtl
-        self.json_fields = ('type', 'items', 'selectAction', 'style', 'verticalAlignment', 'bleed', 'backgroundImage', 'minHeight', 'rtl')
 
     def add_to_items(self, element: Element):
         self.items.append(element)
@@ -184,6 +180,7 @@ class TableCell(Mixin):
 
 
 class TableRow(Mixin, Sequence):
+    __slots__ = ("type", "cells", "style")
     def __init__(self, cells: List, style: Optional[Literal["default", "emphasis", "good", "attention", "warning", "accent"]] = None):
         self.type = "TableRow"
         for i, cell in enumerate(cells):
@@ -191,7 +188,6 @@ class TableRow(Mixin, Sequence):
                 cells[i] = TableCell(cell)
         self.cells = cells
         self.style = style
-        self.json_fields = ("type", "cells", "style")
     def __getitem__(self, __i):
         if isinstance(__i, slice):
             return self.__class__(cells=self.cells[__i])
@@ -209,7 +205,9 @@ class TableRow(Mixin, Sequence):
 
 
 class Table(Mixin, Element):
-
+    __slots__ = ('type', '_columns', 'rows', 'firstRowAsHeader', 'showGridLines', 'gridStyle',
+                 'horizontalCellContentAlignment', 'verticalContentAlignment', 'fallback', 'height',
+                 'separator', 'spacing', 'id', 'isVisible')
     def __init__(self,
                  rows: Optional[Sequence[Sequence[Union[Element, TableCell]]]] = None,
                  firstRowAsHeader: Optional[bool] = None,
@@ -240,10 +238,7 @@ class Table(Mixin, Element):
         self.spacing = spacing
         self.id = id_
         self.isVisible = isVisible
-        self.json_fields = ('type', 'columns', 'rows', 'firstRowAsHeader', 'showGridLines', 'gridStyle',
-                                      'horizontalCellContentAlignment', 'verticalContentAlignment', 'fallback', 'height',
-                                      'separator', 'spacing', 'id', 'isVisible')
-    
+
     @property
     def columns(self):
         if len(self.rows) > 0:
@@ -304,6 +299,7 @@ class Table(Mixin, Element):
 
 
 class ActionSet(Mixin, Element):
+    __slots__ = ("actions", "fallback", "height", "separator", "spacing", "id", "isVisible")
     def __init__(self,
                  actions: Optional[Union[Action, Sequence[Action]]] = None,
                  fallback: Optional[Element] = None,
@@ -321,8 +317,7 @@ class ActionSet(Mixin, Element):
         self.spacing = spacing
         self.id = id_
         self.isVisible = isVisible
-        self.json_fields = ("actions", "fallback", "height", "separator", "spacing", "id", "isVisible")
-    
+
     def append_action(self, action: Action):
         self.actions.append(action)
 

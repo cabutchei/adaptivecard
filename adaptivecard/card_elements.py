@@ -7,6 +7,8 @@ from adaptivecard._mixin import Mixin
 
 class TextBlock(Mixin, Element):
     """Elemento de texto"""
+    __slots__ = ('type', 'text', 'color', 'fontType', 'horizontalAlignment', 'isSubtle', 'maxLines', 'size', 'weight', 'wrap', 'style', 'fallback',
+                            'height', 'separator', 'spacing', 'id', 'isVisible')
     def __init__(self,
                  text: Any = "",
                  color: Optional[Literal["default", "dark", "light", "accent", "good", "warning", "attention"]] = None,
@@ -42,8 +44,6 @@ class TextBlock(Mixin, Element):
         self.spacing = spacing
         self.id = id_
         self.isVisible = isVisible
-        self.json_fields = ('type', 'text', 'color', 'fontType', 'horizontalAlignment', 'isSubtle', 'maxLines', 'size', 'weight', 'wrap', 'style', 'fallback',
-                            'height', 'separator', 'spacing', 'id', 'isVisible')
 
     def __repr__(self):
         return f"{self.__class__.__name__}(text='{self.text}')"
@@ -58,6 +58,7 @@ class TextBlock(Mixin, Element):
 
 
 class Image(Mixin, Element):
+    __slots__ = ('url', 'altText', 'backgroundColor', 'height', 'horizontalAlignment', 'selectAction')
     def __init__(self,
                  url: str,
                  altText: Optional[str] = None,
@@ -66,4 +67,3 @@ class Image(Mixin, Element):
                  horizontalAlignment: Optional[Literal["left", "center", "right"]] = None,
                  selectAction: Optional[str] = None):
         self.type = "Image"
-        self.json_fields = ('url', 'altText', 'backgroundColor', 'height', 'horizontalAlignment', 'selectAction')

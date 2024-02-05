@@ -1,11 +1,12 @@
 from typing import Optional
 from typing_extensions import Literal
-from adaptivecard.cards import AdaptiveCard
+from adaptivecard import AdaptiveCard
 from adaptivecard._mixin import Mixin
 from adaptivecard._base_types import Action
 
 
 class ShowCard(Mixin, Action):
+    __slots__ = ('type', 'title', 'iconUrl', 'id', 'style', 'fallback', 'tooltip', 'isEnabled', 'mode', 'card')
     def __init__(self,
                  card: AdaptiveCard,
                  title: Optional[str] = None,
@@ -27,4 +28,3 @@ class ShowCard(Mixin, Action):
         self.isEnabled = isEnabled
         self.mode = mode
         self.card = card
-        self.json_fields = ('type', 'title', 'iconUrl', 'id', 'style', 'fallback', 'tooltip', 'isEnabled', 'mode', 'card')
