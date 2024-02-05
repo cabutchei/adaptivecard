@@ -32,8 +32,7 @@ def check_type(arg_name: str, arg_value: Any, expected_type: tuple):
             try:
                 check_type(None, inner_value, type_subscripts)
             except:
-                allowed_types = get_args(Union[type_subscripts])
-                breakpoint()
+                allowed_types = (get_args(tp) if get_origin(tp) is Union or isinstance(tp, UnionType) else tp for tp in type_subscripts)
                 allowed_types = tuple([tp.__name__ for tp in allowed_types])
                 raise TypeError(f"argument '{arg_name}' can only contain instances of {allowed_types}")
     else:
