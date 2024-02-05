@@ -1,7 +1,7 @@
 from typing import Any, Optional, Union, Sequence, List, get_type_hints
 from typing_extensions import Literal
 from adaptivecard._base_types import Element, Action, ISelectAction
-from adaptivecard.mixin import Mixin
+from adaptivecard._mixin import Mixin
 from tabulate import tabulate
 from typeguard import check_type
 from adaptivecard.card_elements import TextBlock
