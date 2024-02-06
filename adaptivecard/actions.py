@@ -11,7 +11,7 @@ class ShowCard(Mixin, Action):
                  card: AdaptiveCard,
                  title: Optional[str] = None,
                  icon_url: Optional[str] = None,
-                 id_: Optional[str] = None,
+                 id: Optional[str] = None,
                  style: Optional[Literal["default", "positive", "destructive"]] = None,
                  fallback: Optional[Action] = None,
                  tooltip: Optional[str] = None,
@@ -21,7 +21,7 @@ class ShowCard(Mixin, Action):
         self.type = "Action.ShowCard"
         self.title = title
         self.icon_url = icon_url
-        self.id = id_
+        self.id = id
         self.style = style
         self.fallback = fallback
         self.tooltip = tooltip
