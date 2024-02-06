@@ -1,23 +1,20 @@
-import json
 from typing import Any, Iterable, get_type_hints
-from adaptivecard._utils import check_type
+from adaptivecard._utils import check_type, snake_to_camel
 from functools import partial
 
 
 class Mixin:
-
+    __slots__ = ()
     def to_dict(self):
-        """
-        Returns a json/dictionary representative of the card element
-        """
         dic = {}
         for attr_name, attr_value in zip(self.__slots__, map(partial(getattr, self), self.__slots__)):
+            camel_formated_attr_name = snake_to_camel(attr_name)
             if hasattr(attr_value, "__slots__"):
-                dic[attr_name] = attr_value.to_dict()
+                dic[camel_formated_attr_name] = attr_value.to_dict()
             elif isinstance(attr_value, Iterable) and not isinstance(attr_value, str):
-                dic[attr_name] = [inner_value.to_dict() for inner_value in attr_value if hasattr(inner_value, "__slots__")]
+                dic[camel_formated_attr_name] = [inner_value.to_dict() for inner_value in attr_value if hasattr(inner_value, "__slots__")]
             elif attr_value is not None:
-                dic[attr_name] = attr_value
+                dic[camel_formated_attr_name] = attr_value
         return dic
 
     def __setattr__(self, __name: str, __value: Any) -> None:
