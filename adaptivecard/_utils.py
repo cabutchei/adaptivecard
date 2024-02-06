@@ -1,4 +1,4 @@
-from typing import get_origin, get_args, Union, Literal, Any, Iterable
+from typing import get_origin, get_args, Union, Literal, Any, Iterable, Sequence
 from types import NoneType, UnionType
 
 
@@ -40,7 +40,7 @@ def check_type(arg_name: str, arg_value: Any, expected_type: tuple):
             isinstance(arg_value, expected_type)
         except TypeError:
             raise TypeError("Invalid type")
-        if not isinstance(arg_value, expected_type):
+        if not isinstance(arg_value, expected_type) or (expected_type is Sequence and isinstance(arg_name, str)):
             raise TypeError(f"argument '{arg_name}' must be an instance of {expected_type.__name__}, got {type(arg_value).__name__} instead")
         
 
