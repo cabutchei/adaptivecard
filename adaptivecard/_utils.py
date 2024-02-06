@@ -42,3 +42,20 @@ def check_type(arg_name: str, arg_value: Any, expected_type: tuple):
             raise TypeError("Invalid type")
         if not isinstance(arg_value, expected_type):
             raise TypeError(f"argument '{arg_name}' must be an instance of {expected_type.__name__}, got {type(arg_value).__name__} instead")
+        
+
+def camel_to_snake(s: str):
+    l = list(s)
+    for i, char in enumerate(l):
+        if (lower_char := char.lower()) != char:
+            l[i] = "_" + lower_char if i > 0 else lower_char
+    return "".join(l)
+
+def snake_to_camel(s: str):
+    l = s.split("_")
+    for i, word in enumerate(l):
+        if i > 0:
+            l[i] = word.capitalize()
+    return "".join(l)
+
+
