@@ -1,6 +1,6 @@
 
 class Element:
-    pass
+    __slots__ = ()
 
 class Action:
     pass
