@@ -1,30 +1,27 @@
 from typing import Any, Optional, Union, Sequence
 from typing_extensions import Literal
-from typeguard import typechecked
 from adaptivecard._mixin import Mixin
 from adaptivecard._base_types import Element, Action
 
 
 
 
-class Content:
+class Content(Mixin):
     """Content é o elemento que recebe o AdaptiveCard e é adicionado à lista atachments, atributo de Message"""
+    __slots__ = ("content_type", "content")
     def __init__(self, content: "AdaptiveCard"):
-        self.contentType = "application/vnd.microsoft.card.adaptive"
+        self.content_type = "application/vnd.microsoft.card.adaptive"
         self.content = content
-        self.json_fields = ('contentType', 'content')
 
 
 class Message(Mixin):
-    """"Estrutura final do card tal como se requer para envio a um canal do Teams"""
+    """"Estrutura de mensagem. Um card precisa estar contido em uma mensagem para ser enviado via Teams."""
+    __slots__ = ('type', 'attachments')
     def __init__(self, attachments: Optional[Sequence["Content"]] = None):
         self.type = "message"
         if attachments is None:
             attachments = []
-        if not self.is_sequence(attachments):
-            raise TypeError("'attachments' attribute must be a collection of some kind")
         self.attachments = list(attachments)
-        self.json_fields = ('type', 'attachments')
 
     def attach(self, content):
         self.attachments.append(content)
@@ -32,34 +29,32 @@ class Message(Mixin):
 
 class AdaptiveCard(Mixin):
     """O template principal do card"""  # Essas descrições hão de ficar mais detalhadas à medida que eu desenvolver a lib e sua documentação
-    __slots__ = ("version", "schema", "body", "actions", "fallbackText", "backgroundImage", "minHeight",
-                 "rtl", "speak", "lang", "verticalContentAlignment")
+    __slots__ = ("type", "version", "schema", "body", "actions", "fallback_text", "background_image", "min_height",
+                 "rtl", "speak", "lang", "vertical_content_alignment")
     def __init__(self, version: str = "1.2",
                  schema: str = "http://adaptivecards.io/schemas/adaptive-card.json",
                  body: Optional[Union[Element, Sequence[Element]]] = None,
                  actions: Optional[Union[Action, Sequence[Action]]] = None,
-                 fallbackText: Optional[str] = None,
-                 backgroundImage: Optional[str] = None,
-                 minHeight: Optional[str] = None,
+                 fallback_text: Optional[str] = None,
+                 background_image: Optional[str] = None,
+                 min_height: Optional[str] = None,
                  rtl: Optional[bool] = None,
                  speak: Optional[str] = None,
                  lang: Optional[str] = None,
-                 verticalContentAlignment: Optional[Literal["top", "center", "bottom"]] = None):
+                 vertical_content_alignment: Optional[Literal["top", "center", "bottom"]] = None):
         
         self.type = "AdaptiveCard"
         self.version = version  
         self.schema = schema
         self.body = body
         self.actions = actions
-        self.fallbackText = fallbackText
-        self.backgroundImage = backgroundImage
-        self.minHeight = minHeight
+        self.fallback_text = fallback_text
+        self.background_image = background_image
+        self.min_height = min_height
         self.rtl = rtl
         self.speak = speak
         self.lang = lang
-        self.verticalContentAlignment = verticalContentAlignment
-        self.json_fields = ('type', 'version', 'schema', 'body', 'actions', 'fallbackText', 'backgroundImage',
-                                      'minHeight', 'rtl', 'speak', 'lang', 'verticalContentAlignment', 'actions')
+        self.vertical_content_alignment = vertical_content_alignment
 
     @property
     def empty(self):
@@ -79,13 +74,11 @@ class AdaptiveCard(Mixin):
         return msg
     
     def __setattr__(self, __name: str, __value: Any) -> None:
-        # if __name == 'body':
-        #     if __value is None:
-        #         __value = []
-        #     elif isinstance(__value, Element):
-        #         __value = [__value]
-        #     if not self.is_sequence(__value):
-        #         raise TypeError(f"{__name} attribute must be a collection of some kind")
-        # if __name == 'actions' and isinstance(__value, Action):
-        #     __value = [__value]
+        if __name == 'body':
+            if __value is None:
+                __value = []
+            elif isinstance(__value, Element):
+                __value = [__value]
+        if __name == 'actions' and isinstance(__value, Action):
+            __value = [__value]
         return super().__setattr__(__name, __value)

@@ -6,25 +6,25 @@ from adaptivecard._base_types import Action
 
 
 class ShowCard(Mixin, Action):
-    __slots__ = ('type', 'title', 'iconUrl', 'id', 'style', 'fallback', 'tooltip', 'isEnabled', 'mode', 'card')
+    __slots__ = ('type', 'title', 'icon_url', 'id', 'style', 'fallback', 'tooltip', 'is_enabled', 'mode', 'card')
     def __init__(self,
                  card: AdaptiveCard,
                  title: Optional[str] = None,
-                 iconUrl: Optional[str] = None,
+                 icon_url: Optional[str] = None,
                  id_: Optional[str] = None,
                  style: Optional[Literal["default", "positive", "destructive"]] = None,
                  fallback: Optional[Action] = None,
                  tooltip: Optional[str] = None,
-                 isEnabled: Optional[bool] = None,
+                 is_enabled: Optional[bool] = None,
                  mode: Optional[Literal["primary", "secondary"]] = None):
         
         self.type = "Action.ShowCard"
         self.title = title
-        self.iconUrl = iconUrl
+        self.icon_url = icon_url
         self.id = id_
         self.style = style
         self.fallback = fallback
         self.tooltip = tooltip
-        self.isEnabled = isEnabled
+        self.is_enabled = is_enabled
         self.mode = mode
         self.card = card
