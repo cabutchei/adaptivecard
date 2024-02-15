@@ -1,7 +1,8 @@
-from typing import Any, Optional, Union, Sequence
+from typing import Any
 from typing_extensions import Literal
 from adaptivecard._mixin import Mixin
 from adaptivecard._base_types import Element, Action
+from adaptivecard._typing import ListLike
 
 
 
@@ -17,7 +18,7 @@ class Content(Mixin):
 class Message(Mixin):
     """"Estrutura de mensagem. Um card precisa estar contido em uma mensagem para ser enviado via Teams."""
     __slots__ = ('type', 'attachments')
-    def __init__(self, attachments: Optional[Sequence["Content"]] = None):
+    def __init__(self, attachments: ListLike["Content"] | None = None):
         self.type = "message"
         if attachments is None:
             attachments = []
@@ -31,22 +32,22 @@ class AdaptiveCard(Mixin):
     """O template principal do card"""  # Essas descrições hão de ficar mais detalhadas à medida que eu desenvolver a lib e sua documentação
     __slots__ = ("type", "version", "schema", "body", "actions", "fallback_text", "background_image", "min_height",
                  "rtl", "speak", "lang", "vertical_content_alignment")
-    def __init__(self, version: str = "1.2",
-                 schema: str = "http://adaptivecards.io/schemas/adaptive-card.json",
-                 body: Optional[Union[Element, Sequence[Element]]] = None,
-                 actions: Optional[Union[Action, Sequence[Action]]] = None,
-                 fallback_text: Optional[str] = None,
-                 background_image: Optional[str] = None,
-                 min_height: Optional[str] = None,
-                 rtl: Optional[bool] = None,
-                 speak: Optional[str] = None,
-                 lang: Optional[str] = None,
-                 vertical_content_alignment: Optional[Literal["top", "center", "bottom"]] = None):
+    def __init__(self,
+                 version: str | float = "1.2",
+                 body: Element | ListLike[Element] | None = None,
+                 actions: Action | ListLike[Action] | None = None,
+                 fallback_text: str | None = None,
+                 background_image: str | None = None,
+                 min_height: str | None = None,
+                 rtl: bool | None = None,
+                 speak: str | None = None,
+                 lang: str | None = None,
+                 vertical_content_alignment: Literal["top", "center", "bottom"] | None = None):
         
         self.type = "AdaptiveCard"
         self.version = version  
-        self.schema = schema
-        self.body = body
+        self.schema = "http://adaptivecards.io/schemas/adaptive-card.json"
+        self.body: list = body
         self.actions = actions
         self.fallback_text = fallback_text
         self.background_image = background_image
@@ -60,7 +61,7 @@ class AdaptiveCard(Mixin):
     def empty(self):
         return len(self.body) == 0
 
-    def append_element(self, element: Element):
+    def append(self, element: Element):
         self.body.append(element)
 
     def append_action(self, action):
@@ -74,6 +75,11 @@ class AdaptiveCard(Mixin):
         return msg
     
     def __setattr__(self, __name: str, __value: Any) -> None:
+        if __name == 'version':
+            version = __value
+            if isinstance(version, float):
+                version = str(version)
+            __value = version
         if __name == 'body':
             if __value is None:
                 __value = []
