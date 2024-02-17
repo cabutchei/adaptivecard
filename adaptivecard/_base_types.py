@@ -5,6 +5,18 @@ class Element:
 class Action:
     pass
 
+class Execute(Action):
+    pass
+
+class OpenUrl(Action):
+    pass
+
+class Submit(Action):
+    pass
+
+class ToggleVisibility(Action):
+    pass
+
 class ISelectAction:
     pass
 

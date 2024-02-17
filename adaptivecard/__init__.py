@@ -34,19 +34,21 @@ class AdaptiveCard(Mixin):
                  "rtl", "speak", "lang", "vertical_content_alignment")
     def __init__(self,
                  version: str | float = "1.2",
-                 body: Element | ListLike[Element] | None = None,
-                 actions: Action | ListLike[Action] | None = None,
-                 fallback_text: str | None = None,
-                 background_image: str | None = None,
-                 min_height: str | None = None,
-                 rtl: bool | None = None,
-                 speak: str | None = None,
-                 lang: str | None = None,
-                 vertical_content_alignment: Literal["top", "center", "bottom"] | None = None):
+                 body: Element | ListLike[Element] = None,
+                 actions: Action | ListLike[Action] = None,
+                 fallback_text: str = None,
+                 background_image: str = None,
+                 min_height: str = None,
+                 rtl: bool = None,
+                 speak: str = None,
+                 lang: str = None,
+                 vertical_content_alignment: Literal["top", "center", "bottom"] = None):
         
         self.type = "AdaptiveCard"
         self.version = version  
         self.schema = "http://adaptivecards.io/schemas/adaptive-card.json"
+        if body is None:
+            body = []
         self.body: list = body
         self.actions = actions
         self.fallback_text = fallback_text
@@ -80,11 +82,8 @@ class AdaptiveCard(Mixin):
             if isinstance(version, float):
                 version = str(version)
             __value = version
-        if __name == 'body':
-            if __value is None:
-                __value = []
-            elif isinstance(__value, Element):
-                __value = [__value]
+        if __name == 'body' and isinstance(__value, Element):
+            __value = [__value]
         if __name == 'actions' and isinstance(__value, Action):
             __value = [__value]
         return super().__setattr__(__name, __value)

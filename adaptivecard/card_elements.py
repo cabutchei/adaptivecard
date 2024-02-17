@@ -2,30 +2,32 @@ from typing import Any, Optional, Union
 from typing_extensions import Literal
 from adaptivecard._base_types import Element
 from adaptivecard._mixin import Mixin
+from adaptivecard.actions import Execute, OpenUrl, Submit, ToggleVisibilty
 
 
 
 class TextBlock(Mixin, Element):
     """Elemento de texto"""
-    __slots__ = ('type', 'text', 'color', 'font_type', 'horizontal_alignment', 'is_subtle', 'max_lines', 'size', 'weight', 'wrap', 'style', 'fallback',
-                            'height', 'separator', 'spacing', 'id', 'is_visible')
+    __slots__ = ('type', 'text', 'color', 'font_type', 'horizontal_alignment', 'is_subtle',
+                 'max_lines', 'size', 'weight', 'wrap', 'style', 'fallback',
+                 'height', 'separator', 'spacing', 'id', 'is_visible')
     def __init__(self,
-                 text: Any = "",
-                 color: Optional[Literal["default", "dark", "light", "accent", "good", "warning", "attention"]] = None,
-                 font_type: Optional[Literal["default", "monospace"]] = None,
-                 horizontal_alignment: Optional[Literal["left", "center", "right"]] = None,
-                 is_subtle: Optional[bool] = None,
-                 max_lines: Optional[int] = None,
-                 size: Optional[Literal["default", "small", "medium", "large", "extraLarge"]] = None,
-                 weight: Optional[Literal["default", "lighter", "bolder"]] = None,
-                 wrap: Optional[bool] = None,
-                 style: Optional[Literal["default", "heading"]] = None,
-                 fallback: Optional[Union[str, Element]] = None,
-                 height: Optional[Literal["auto", "stretch"]] = None,
-                 separator: Optional[bool] = None,
-                 spacing: Optional[Literal["default", "none", "small", "medium", "large", "extraLarge", "padding"]] = None,
-                 id: Optional[str] = None,
-                 is_visible: Optional[bool] = None):
+                 text: Any,
+                 color: Literal["default", "dark", "light", "accent", "good", "warning", "attention"] = None,
+                 font_type: Literal["default", "monospace"] = None,
+                 horizontal_alignment: Literal["left", "center", "right"] = None,
+                 is_subtle: bool = None,
+                 max_lines: int = None,
+                 size: Literal["default", "small", "medium", "large", "extraLarge"] = None,
+                 weight: Literal["default", "lighter", "bolder"] = None,
+                 wrap: bool = None,
+                 style: Literal["default", "heading"] = None,
+                 fallback: str | Element = None,
+                 height: Literal["auto", "stretch"] = None,
+                 separator: bool = None,
+                 spacing: Literal["default", "none", "small", "medium", "large", "extraLarge", "padding"] = None,
+                 id: str = None,
+                 is_visible: bool = None):
 
         self.type = "TextBlock"
         self.text = text
@@ -58,12 +60,39 @@ class TextBlock(Mixin, Element):
 
 
 class Image(Mixin, Element):
-    __slots__ = ('url', 'alt_text', 'background_color', 'height', 'horizontal_alignment', 'select_action')
+    __slots__ = ("type", "url", "alt_text", "background_color", "height", "horizontal_alignment",
+                 "select_action", "size", "style", "width", "fallback", "separator", "spacing",
+                 "id", "is_visible")
     def __init__(self,
                  url: str,
-                 alt_text: Optional[str] = None,
-                 background_color: Optional[str] = None,
-                 height: Optional[str] = None,
-                 horizontal_alignment: Optional[Literal["left", "center", "right"]] = None,
-                 select_action: Optional[str] = None):
+                 alt_text: str = None,
+                 background_color: str = None,
+                 height: str | Literal["auto", "stretch"] = None,
+                 horizontal_alignment: Literal["left", "center", "right"] = None,
+                 select_action: Execute | OpenUrl | Submit | ToggleVisibilty = None,
+                 size: Literal["auto", "stretch", "small", "medium", "large"] = None,
+                 style: Literal["default", "person"] = None,
+                 width: str = None,
+                 fallback: Element = None,
+                 separator: bool = None,
+                 spacing: Literal["default", "none", "medium", "large", "extraLarge",
+                                  "padding"] = None,
+                 id: str = None,
+                 is_visible: bool = None
+                ):
+
         self.type = "Image"
+        self.url = url
+        self.alt_text = alt_text
+        self.background_color = background_color
+        self.height = height
+        self.horizontal_alignment = horizontal_alignment
+        self.select_action = select_action
+        self.size = size
+        self.style = style
+        self.width = width
+        self.fallback = fallback
+        self.separator = separator
+        self.spacing = spacing
+        self.id = id
+        self.is_visible = is_visible
