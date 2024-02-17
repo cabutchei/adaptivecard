@@ -27,7 +27,7 @@ class TextBlock(Mixin, Element):
                  fallback: str | Element = DefaultNone,
                  height: Literal["auto", "stretch"] = DefaultNone,
                  separator: bool = DefaultNone,
-                 spacing: Literal["default", "none", "small", "medium", "large", "extraLarge", "padding"] = DefaultNone,
+                 spacing: Literal["default", "none", "small", "medium", "large", "extraLarge", "padding"] | None = DefaultNone,
                  id: str = DefaultNone,
                  is_visible: bool = DefaultNone):
 
