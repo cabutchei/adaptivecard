@@ -1,6 +1,6 @@
 from typing import Any, Literal, Iterable
 from adaptivecard._base_types import Element, ISelectAction
-from adaptivecard._typing import ListLike
+from adaptivecard._typing import ListLike, DefaultNone
 from adaptivecard._mixin import Mixin
 
 
@@ -11,22 +11,22 @@ class Text:
 
     def __init__(self,
                  id: str,
-                 is_multiline: bool = None,
-                 max_length: int = None,
-                 placeholder : str = None,
-                 regex: str = None,
-                 style: str = None,
-                 inline_action : ISelectAction = None,
-                 value: str = None,
-                 error_message: str = None,
-                 is_required : bool = None,
-                 label: str = None,
-                 fallback: Element = None,
-                 height: Literal["auto", "stretch"] = None,
-                 separator: bool = None,
+                 is_multiline: bool = DefaultNone,
+                 max_length: int = DefaultNone,
+                 placeholder : str = DefaultNone,
+                 regex: str = DefaultNone,
+                 style: str = DefaultNone,
+                 inline_action : ISelectAction = DefaultNone,
+                 value: str = DefaultNone,
+                 error_message: str = DefaultNone,
+                 is_required : bool = DefaultNone,
+                 label: str = DefaultNone,
+                 fallback: Element = DefaultNone,
+                 height: Literal["auto", "stretch"] = DefaultNone,
+                 separator: bool = DefaultNone,
                  spacing: Literal["default", "none", "small", "medium", "large", "extraLarge",
-                                  "padding"] = None,
-                 is_visible: bool = None,
+                                  "padding"] | None = DefaultNone,
+                 is_visible: bool = DefaultNone,
                  ):
         self.type = "Input.Text"
         self.id = id
@@ -54,19 +54,19 @@ class Number:
 
     def __init__(self,
                  id: str,
-                 max: int = None,
-                 min: int = None,
-                 placeholder: str = None,
-                 value: int = None,
-                 error_message: str = None,
-                 is_required : bool = None,
-                 label: str = None,
-                 fallback: Element = None,
-                 height: Literal["auto", "stretch"] = None,
-                 separator: bool = None,
+                 max: int = DefaultNone,
+                 min: int = DefaultNone,
+                 placeholder: str = DefaultNone,
+                 value: int = DefaultNone,
+                 error_message: str = DefaultNone,
+                 is_required : bool = DefaultNone,
+                 label: str = DefaultNone,
+                 fallback: Element = DefaultNone,
+                 height: Literal["auto", "stretch"] = DefaultNone,
+                 separator: bool = DefaultNone,
                  spacing: Literal["default", "none", "small", "medium", "large", "extraLarge",
-                                  "padding"] = None,
-                 is_visible: bool = None,
+                                  "padding"] | None = DefaultNone,
+                 is_visible: bool = DefaultNone,
                  ):
 
         self.type = "Input.Number"
@@ -90,19 +90,19 @@ class Date:
                  "label", "fallback", "height", "separator", "spacing", "is_visible")
     def __init__(self,
                  id: str,
-                 max: str = None,
-                 min: str = None,
-                 placeholder: str = None,
-                 value: str = None,
-                 error_message: str = None,
-                 is_required : bool = None,
-                 label: str = None,
-                 fallback: Element = None,
-                 height: Literal["auto", "stretch"] = None,
-                 separator: bool = None,
+                 max: str = DefaultNone,
+                 min: str = DefaultNone,
+                 placeholder: str = DefaultNone,
+                 value: str = DefaultNone,
+                 error_message: str = DefaultNone,
+                 is_required : bool = DefaultNone,
+                 label: str = DefaultNone,
+                 fallback: Element = DefaultNone,
+                 height: Literal["auto", "stretch"] = DefaultNone,
+                 separator: bool = DefaultNone,
                  spacing: Literal["default", "none", "small", "medium", "large", "extraLarge",
-                                  "padding"] = None,
-                 is_visible: bool = None,) -> None:
+                                  "padding"] | None = DefaultNone,
+                 is_visible: bool = DefaultNone,) -> None:
 
         self.type = "Input.Date"
         self.id = id
@@ -125,19 +125,19 @@ class Time:
                  "label", "fallback", "height", "separator", "spacing", "is_visible")
     def __init__(self,
                  id: str,
-                 max: str = None,
-                 min: str = None,
-                 placeholder: str = None,
-                 value: str = None,
-                 error_message: str = None,
-                 is_required : bool = None,
-                 label: str = None,
-                 fallback: Element = None,
-                 height: Literal["auto", "stretch"] = None,
-                 separator: bool = None,
+                 max: str = DefaultNone,
+                 min: str = DefaultNone,
+                 placeholder: str = DefaultNone,
+                 value: str = DefaultNone,
+                 error_message: str = DefaultNone,
+                 is_required : bool = DefaultNone,
+                 label: str = DefaultNone,
+                 fallback: Element = DefaultNone,
+                 height: Literal["auto", "stretch"] = DefaultNone,
+                 separator: bool = DefaultNone,
                  spacing: Literal["default", "none", "small", "medium", "large", "extraLarge",
-                                  "padding"] = None,
-                 is_visible: bool = None):
+                                  "padding"] | None = DefaultNone,
+                 is_visible: bool = DefaultNone):
 
         self.type = "Input.Time"
         self.id = id
@@ -159,13 +159,50 @@ class DataQuery:
     __slots__ = ("type", "dataset", "count", "skip")
     def __init__(self,
                  dataset: str,
-                 count: int = None,
-                 skip: int = None
+                 count: int = DefaultNone,
+                 skip: int = DefaultNone
                  ):
+
         self.type = "Data.Query"
         self.dataset = dataset
         self.count = count
         self.skip = skip
+
+
+class Toggle:
+    __slots__ = ()
+    def __init__(self,
+                 title: str,
+                 id: str,
+                 value: bool = DefaultNone,
+                 value_off: bool = DefaultNone,
+                 value_on: bool = DefaultNone,
+                 wrap: bool = DefaultNone,
+                 error_message: str = DefaultNone,
+                 is_required : bool = DefaultNone,
+                 label: str = DefaultNone,
+                 fallback: Element = DefaultNone,
+                 height: Literal["auto", "stretch"] = DefaultNone,
+                 separator: bool = DefaultNone,
+                 spacing: Literal["default", "none", "small", "medium", "large", "extraLarge",
+                                  "padding"] | None = DefaultNone,
+                 is_visible: bool = DefaultNone):
+
+        self.type = "Input.Toggle"
+        self.title = title
+        self.id = id
+        self.value = value
+        self.value_off = value_off
+        self.value_on = value_on
+        self.wrap = wrap
+        self.error_message = error_message
+        self.is_required = is_required
+        self.label = label
+        self.fallback = fallback
+        self.height = height
+        self.separator = separator
+        self.spacing = spacing
+        self.is_visible = is_visible  
 
 
 class Choice:
@@ -184,22 +221,22 @@ class ChoiceSet(Mixin):
                  "height", "separator", "spacing", "is_visible")
     def __init__(self,
                  id: str,
-                 choices: Choice| ListLike[Choice] = None,
-                 choices_data: DataQuery = None,
-                 is_multiselect: bool = None,
-                 style: Literal["compact", "extended", "filtered"] = None,
-                 value: str = None,
-                 placeholder: str = None,
-                 wrap: bool = None,
-                 error_message: str = None,
-                 is_required : bool = None,
-                 label: str = None,
-                 fallback: Element = None,
-                 height: Literal["auto", "stretch"] = None,
-                 separator: bool = None,
+                 choices: Choice| ListLike[Choice] = DefaultNone,
+                 choices_data: DataQuery = DefaultNone,
+                 is_multiselect: bool = DefaultNone,
+                 style: Literal["compact", "extended", "filtered"] = DefaultNone,
+                 value: str = DefaultNone,
+                 placeholder: str = DefaultNone,
+                 wrap: bool = DefaultNone,
+                 error_message: str = DefaultNone,
+                 is_required : bool = DefaultNone,
+                 label: str = DefaultNone,
+                 fallback: Element = DefaultNone,
+                 height: Literal["auto", "stretch"] = DefaultNone,
+                 separator: bool = DefaultNone,
                  spacing: Literal["default", "none", "small", "medium", "large", "extraLarge",
-                                  "padding"] = None,
-                 is_visible: bool = None,
+                                  "padding"] | None = DefaultNone,
+                 is_visible: bool = DefaultNone,
                  ):
 
         self.type = "Input.ChoiceSet"

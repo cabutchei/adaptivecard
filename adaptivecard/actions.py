@@ -2,7 +2,7 @@ from typing_extensions import Literal
 from adaptivecard import AdaptiveCard
 from adaptivecard._mixin import Mixin
 from adaptivecard._base_types import Action
-from adaptivecard._typing import ListLike
+from adaptivecard._typing import ListLike, DefaultNone
 
 
 class ShowCard(Mixin, Action):
@@ -10,14 +10,14 @@ class ShowCard(Mixin, Action):
                  'mode', 'card')
     def __init__(self,
                  card: AdaptiveCard,
-                 title: str = None,
-                 icon_url: str = None,
-                 id: str = None,
-                 style: Literal["default", "positive", "destructive"] | None = None,
-                 fallback: Action = None,
-                 tooltip: str = None,
-                 is_enabled: bool = None,
-                 mode: Literal["primary", "secondary"] = None):
+                 title: str = DefaultNone,
+                 icon_url: str = DefaultNone,
+                 id: str = DefaultNone,
+                 style: Literal["default", "positive", "destructive"] = DefaultNone,
+                 fallback: Action = DefaultNone,
+                 tooltip: str = DefaultNone,
+                 is_enabled: bool = DefaultNone,
+                 mode: Literal["primary", "secondary"] = DefaultNone):
         
         self.type = "Action.ShowCard"
         self.title = title
@@ -35,13 +35,13 @@ class OpenUrl:
     __slots__ = ("url", "title", "id", "style", "fallback", "tooltip", "is_enabled", "mode")
     def __init__(self,
                  url: str,
-                 title: str = None,
-                 id: str = None,
-                 style: Literal["default", "positive", "destructive"] | None = None,
-                 fallback: Action  = None,
-                 tooltip: str = None,
-                 is_enabled: bool = None,
-                 mode: Literal["primary", "secondary"] | None = None):
+                 title: str = DefaultNone,
+                 id: str = DefaultNone,
+                 style: Literal["default", "positive", "destructive"] | None = DefaultNone,
+                 fallback: Action  = DefaultNone,
+                 tooltip: str = DefaultNone,
+                 is_enabled: bool = DefaultNone,
+                 mode: Literal["primary", "secondary"] | None = DefaultNone):
 
         self.type = "Action.OpenUrl"
         self.title = title
@@ -60,14 +60,14 @@ class Submit:
     def __init__(self,
                  data: dict,
                  associated_inputs: Literal["auto", "none"], 
-                 title: str = None,
-                 icon_url: str = None,
-                 id: str = None,
-                 style: Literal["default", "positive", "destructive"] = None,
-                 fallback: Action = None,
-                 tooltip: str = None,
-                 is_enabled: bool = None,
-                 mode: Literal["primary", "secondary"] = None):
+                 title: str = DefaultNone,
+                 icon_url: str = DefaultNone,
+                 id: str = DefaultNone,
+                 style: Literal["default", "positive", "destructive"] = DefaultNone,
+                 fallback: Action = DefaultNone,
+                 tooltip: str = DefaultNone,
+                 is_enabled: bool = DefaultNone,
+                 mode: Literal["primary", "secondary"] = DefaultNone):
 
         self.type = "Action.ToggleVisibility"
         self.data = data
@@ -97,14 +97,14 @@ class ToggleVisibilty:
     def __init__(self,
                  data: str | dict,
                  target_elements: ListLike[TargetElement],
-                 icon_url: str = None,
-                 title: str = None,
-                 id: str = None,
-                 style: Literal["default", "positive", "destructive"] = None,
-                 fallback: Action = None,
-                 tooltip: str = None,
-                 is_enabled: bool = None,
-                 mode: Literal["primary", "secondary"] = None):
+                 icon_url: str = DefaultNone,
+                 title: str = DefaultNone,
+                 id: str = DefaultNone,
+                 style: Literal["default", "positive", "destructive"] = DefaultNone,
+                 fallback: Action = DefaultNone,
+                 tooltip: str = DefaultNone,
+                 is_enabled: bool = DefaultNone,
+                 mode: Literal["primary", "secondary"] = DefaultNone):
         self.data = data
         self.target_elements = target_elements
         self.icon_url = icon_url
@@ -120,15 +120,15 @@ class ToggleVisibilty:
 class Execute:
     __slots__ = ()
     def __init__(self,
-                 verb: str = None,
-                 data: dict = None,
-                 associated_inputs: Literal["auto", "none"] = None,
-                 title: str = None,
-                 icon_url: str = None,
-                 id: str = None,
-                 style: Literal["default", "positive", "destructive"] = None,
-                 fallback: Action = None,
-                 tooltip: str = None,
-                 is_enabled: bool = None,
-                 mode: Literal["primary", "secondary"] = None):
+                 verb: str = DefaultNone,
+                 data: dict = DefaultNone,
+                 associated_inputs: Literal["auto", "none"] = DefaultNone,
+                 title: str = DefaultNone,
+                 icon_url: str = DefaultNone,
+                 id: str = DefaultNone,
+                 style: Literal["default", "positive", "destructive"] = DefaultNone,
+                 fallback: Action = DefaultNone,
+                 tooltip: str = DefaultNone,
+                 is_enabled: bool = DefaultNone,
+                 mode: Literal["primary", "secondary"] = DefaultNone):
         pass

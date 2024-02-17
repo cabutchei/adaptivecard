@@ -1,11 +1,11 @@
 from typing import Any, get_type_hints
 from typing_extensions import Literal
-from adaptivecard._base_types import Element, Action, ISelectAction, BaseColumnSet, BaseColumn, Execute, OpenUrl, Submit, ToggleVisibility
+from adaptivecard._base_types import Element, Action, BaseColumnSet, BaseColumn, Execute, OpenUrl, Submit, ToggleVisibility
 from adaptivecard._mixin import Mixin
-from tabulate import tabulate
 from adaptivecard.card_elements import TextBlock
-from adaptivecard._utils import check_type
-from adaptivecard._typing import ListLike
+from adaptivecard._utils import check_type, convert_to_pixel_string, raise_invalid_pixel_error
+from adaptivecard._typing import ListLike, DefaultNone
+from tabulate import tabulate
 
 
 
@@ -14,19 +14,22 @@ class Container(Mixin, Element):
     __slots__ = ('type', 'items', 'style', 'vertical_content_alignment', 'bleed', 'min_height',
                  'rtl', 'height', 'separator', 'spacing', 'id', 'is_visible')
     def __init__(self,
-                 items: Element | ListLike[Element] = None,
-                 style: Literal["default", "emphasis", "good", "attention", "warning", "accent"] = None,
-                 vertical_content_alignment: Literal["top", "center", "bottom"] = None,
-                 bleed: bool = None,
-                 min_height: str = None,
-                 rtl: bool = None,
-                 height: Literal["auto", "stretch"] = None,
-                 separator: bool = None,
-                 spacing: Literal["default", "none", "small", "medium", "large", "extraLarge", "padding"] = None,
-                 id: str = None,
-                 is_visible: bool = None):
+                 items: Element | ListLike[Element] = DefaultNone,
+                 style: Literal["default", "emphasis", "good", "attention", "warning", "accent"] = DefaultNone,
+                 vertical_content_alignment: Literal["top", "center", "bottom"] = DefaultNone,
+                 bleed: bool = DefaultNone,
+                 min_height: str = DefaultNone,
+                 rtl: bool = DefaultNone,
+                 height: Literal["auto", "stretch"] = DefaultNone,
+                 separator: bool = DefaultNone,
+                 spacing: Literal["default", "none", "small", "medium", "large", "extraLarge",
+                                  "padding"] | None = DefaultNone,
+                 id: str = DefaultNone,
+                 is_visible: bool = DefaultNone):
 
         self.type = "Container"
+        if items is DefaultNone:
+            items = []
         self.items = items
         self.style = style
         self.vertical_content_alignment = vertical_content_alignment
@@ -56,36 +59,37 @@ class Container(Mixin, Element):
         return "[" + ", ".join([str(item) for item in self.items]) + "]"
     
     def __setattr__(self, __name: str, __value: Any) -> None:
-        if __name == 'items':
-            if __value is None:
-                __value = []
-            elif isinstance(__value, Element):
-                __value = [__value]
+        if __name == 'items' and isinstance(__value, Element):
+            __value = [__value]
         return super().__setattr__(__name, __value)
 
 
 class Column(Mixin, Element, BaseColumn):
     """O contâiner Column define um elemento de coluna, que é parte de um ColumnSet."""
-    __slots__ = ('type', 'items', 'background_image', 'bleed', 'fallback', 'min_height', 'rtl', 'separator',
-                                      'spacing', 'style', 'vertical_content_alignment', 'rtl', 'width', 'id', 'is_visible')
+    __slots__ = ('type', 'items', 'background_image', 'bleed', 'fallback', 'min_height',
+                 'rtl', 'separator', 'spacing', 'style', 'vertical_content_alignment', 'rtl',
+                 'width', 'id', 'is_visible')
     def __init__(self,
-                 items: ListLike[Element] = None,
-                 background_image = None,
-                 bleed: bool = None,
-                 fallback: "Column" = None,
-                 min_height: str | int = None, # criar condição de casting
-                 rtl: bool = None,
-                 separator: bool = None,
-                 spacing: Literal["default", "none", "small", "medium", "large", "extraLarge", "padding"] = None,
-                 select_action: Execute | OpenUrl | Submit | ToggleVisibility = None,
+                 items: ListLike[Element] = DefaultNone,
+                 background_image = DefaultNone,
+                 bleed: bool = DefaultNone,
+                 fallback: "Column" = DefaultNone,
+                 min_height: str | int = DefaultNone,
+                 rtl: bool = DefaultNone,
+                 separator: bool = DefaultNone,
+                 spacing: Literal["default", "none", "small", "medium", "large", "extraLarge",
+                                  "padding"] | None = DefaultNone,
+                 select_action: Execute | OpenUrl | Submit | ToggleVisibility = DefaultNone,
                  style: Literal["default", "emphasis", "good", "attention", "warning",
-                                "accent"] = None,
-                 vertical_content_alignment: Literal["top", "center", "bottom"] = None,
-                 width: str | int = None, # adicionar condicao de casting
-                 id: str = None,
-                 is_visible: bool = None):
+                                "accent"] = DefaultNone,
+                 vertical_content_alignment: Literal["top", "center", "bottom"] = DefaultNone,
+                 width: str | int = DefaultNone,
+                 id: str = DefaultNone,
+                 is_visible: bool = DefaultNone):
 
         self.type = "Column"
+        if items is DefaultNone:
+            items = []
         self.items: list = items
         self.background_image = background_image
         self.bleed = bleed
@@ -110,11 +114,16 @@ class Column(Mixin, Element, BaseColumn):
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "items":
             items = __value
-            if items is None:
-                items = []
-            elif not isinstance(items, list):
-                items = list(items)
-            __value = items
+            if not isinstance(items, list):
+                __value = list(items)
+        elif __name == "min_height":
+            min_height = __value
+            if isinstance(min_height, int):
+                __value = str(min_height) + "px"
+        elif __name == "width":
+            width = __value
+            if isinstance(width, int):
+                __value = str(width) + "px"
         return super().__setattr__(__name, __value)
 
 
@@ -123,22 +132,24 @@ class ColumnSet(Mixin, Element, BaseColumnSet):
     __slots__ = ('type', 'columns', 'style', 'bleed', 'min_height', 'horizontal_alignment', 'height',
                  'separator', 'spacing', 'id', 'is_visible')
     def __init__(self,
-                 columns: ListLike[Column] = None,
-                 select_action: Execute | OpenUrl | Submit | ToggleVisibility = None,
+                 columns: ListLike[Column] = DefaultNone,
+                 select_action: Execute | OpenUrl | Submit | ToggleVisibility = DefaultNone,
                  style: Literal["default", "emphasis", "good", "attention", "warning",
-                                "accent"] = None,
-                 bleed: bool = None,
-                 min_height: str | int = None,   # adicionar condicao de casting
-                 horizontal_alignment: Literal["left", "center", "right"] | None = None,
-                 fallback: Element = None,
-                 height: Literal["auto", "stretch"] | None = None,
-                 separator: bool | None = None,
+                                "accent"] = DefaultNone,
+                 bleed: bool = DefaultNone,
+                 min_height: str | int = DefaultNone,   # adicionar condicao de casting
+                 horizontal_alignment: Literal["left", "center", "right"] | None = DefaultNone,
+                 fallback: Element = DefaultNone,
+                 height: Literal["auto", "stretch"] | None = DefaultNone,
+                 separator: bool | None = DefaultNone,
                  spacing: Literal["default", "none", "small", "medium", "large", "extraLarge",
-                                  "padding"] = None,
-                 id: str = None,
-                 is_visible: bool = None):
+                                  "padding"] | None = DefaultNone,
+                 id: str = DefaultNone,
+                 is_visible: bool = DefaultNone):
 
         self.type = 'ColumnSet'
+        if columns is DefaultNone:
+            columns = []
         self.columns = columns
         self.style = style
         self.bleed = bleed
@@ -160,29 +171,34 @@ class ColumnSet(Mixin, Element, BaseColumnSet):
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "columns":
             columns = __value
-            if columns is None:
-                columns = []
-            elif not isinstance(columns, list):
+            if not isinstance(columns, list):
                 columns = list(columns)
+        elif __name == "min_height":
+            min_height = __value
+            try:
+                min_height = convert_to_pixel_string(min_height)
+            except ValueError:
+                raise_invalid_pixel_error(__name, min_height)
         return super().__setattr__(__name, __value)
 
 
 
 class TableCell(Mixin):
-    __slots__ = ('type', 'items', 'select_action', 'style', 'vertical_alignment', 'bleed', 'background_image', 'min_height', 'rtl')
+    __slots__ = ('type', 'items', 'select_action', 'style', 'vertical_alignment', 'bleed',
+                 'background_image', 'min_height', 'rtl')
     def __init__(self,
-                 items: Any | ListLike[Any] = None,
-                 select_action: Execute | OpenUrl | Submit | ToggleVisibility = None,
+                 items: Any | ListLike[Any] = DefaultNone,
+                 select_action: Execute | OpenUrl | Submit | ToggleVisibility = DefaultNone,
                  style: Literal["default", "emphasis", "good", "attention", "warning",
-                                "accent"] = None,
-                 vertical_alignment: Literal["top", "center", "bottom"] = None,
-                 bleed: bool = None,
-                 background_image: str | None = None,
-                 min_height: str | int = None, # adicionar condicao de casting
-                 rtl: bool = None):
+                                "accent"] = DefaultNone,
+                 vertical_alignment: Literal["top", "center", "bottom"] = DefaultNone,
+                 bleed: bool = DefaultNone,
+                 background_image: str = DefaultNone,
+                 min_height: str | int = DefaultNone,
+                 rtl: bool = DefaultNone):
 
         self.type = "TableCell"
-        if items is None:
+        if items is DefaultNone:
             items = []
         self.items: list = items
         self.select_action = select_action
@@ -209,15 +225,20 @@ class TableCell(Mixin):
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "items":
             items = __value
-            if items is None:
-                items = []
-            elif isinstance(items, Element):
+            if isinstance(items, Element):
                 items = [items]
             elif isinstance(items, ListLike):
-                items = [item if isinstance(item, Element) else TextBlock(str(item)) for item in items]
+                items = [item if isinstance(item, Element) else TextBlock(item) for item in items]
             else:
-                items = [TextBlock(str(items))]
+                items = [TextBlock(items)]
             __value = items
+        elif __name == "min_height":
+            min_height = __value
+            try:
+                min_height = convert_to_pixel_string(min_height)
+            except ValueError:
+                raise_invalid_pixel_error(__name, min_height)
+            __value = min_height
         return super().__setattr__(__name, __value)
 
 
@@ -226,7 +247,7 @@ class TableRow(Mixin, ListLike):
     def __init__(self,
                  cells: ListLike[Any],
                  style: Literal["default", "emphasis", "good", "attention", "warning",
-                                "accent"] = None):
+                                "accent"] = DefaultNone):
         self.type = "TableRow"
         for i, cell in enumerate(cells):
             if not isinstance(cell, TableCell):
@@ -263,23 +284,25 @@ class Table(Mixin, Element):
                  'horizontal_cell_content_alignment', 'vertical_content_alignment', 'fallback', 'height',
                  'separator', 'spacing', 'id', 'is_visible')
     def __init__(self,
-                 rows: ListLike[ListLike[Element | TableCell]] = None,
-                 first_row_as_header: bool = None,
-                 columns: ListLike[int] = None,
-                 show_grid_lines: bool = None,
+                 rows: ListLike[ListLike[Element | TableCell]] = DefaultNone,
+                 first_row_as_header: bool = DefaultNone,
+                 columns: ListLike[int] = DefaultNone,
+                 show_grid_lines: bool = DefaultNone,
                  grid_style: Literal["default", "emphasis", "good", "attention", "warning",
-                                     "accent"] = None,
-                 horizontal_cell_content_alignment: Literal["left", "center", "right"] = None,
-                 vertical_cell_content_alignment: Literal["top", "center", "bottom"] = None,
-                 fallback: Element = None,
-                 height: Literal["auto", "stretch"] = None,
-                 separator: bool = None,
+                                     "accent"] = DefaultNone,
+                 horizontal_cell_content_alignment: Literal["left", "center", "right"] = DefaultNone,
+                 vertical_cell_content_alignment: Literal["top", "center", "bottom"] = DefaultNone,
+                 fallback: Element = DefaultNone,
+                 height: Literal["auto", "stretch"] = DefaultNone,
+                 separator: bool = DefaultNone,
                  spacing: Literal["default", "none", "small", "medium", "large", "extraLarge",
-                                  "padding"] = None,
-                 id: str = None,
-                 is_visible: bool = None):
+                                  "padding"] | None = DefaultNone,
+                 id: str = DefaultNone,
+                 is_visible: bool = DefaultNone):
 
         self.type = "Table"
+        if rows is DefaultNone:
+            rows = []
         self.rows: list = rows
         self.columns = columns if columns is not None else []
         self.first_row_as_header = first_row_as_header
@@ -334,8 +357,6 @@ class Table(Mixin, Element):
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "rows":
             rows = __value
-            if rows is None:
-                rows = []
             for i, row in enumerate(rows):
                 for j, cell in enumerate(row):
                     if not isinstance(cell, TableCell):
@@ -349,15 +370,18 @@ class Table(Mixin, Element):
 class ActionSet(Mixin, Element):
     __slots__ = ("type", "actions", "fallback", "height", "separator", "spacing", "id", "is_visible")
     def __init__(self,
-                 actions: Action | ListLike[Action] = None,
-                 fallback: Element = None,
-                 height: Literal["auto", "stretch"] = None,
-                 separator: bool = None,
-                 spacing: Literal["default", "none", "small", "medium", "large", "extraLarge", "padding"] | None = None,
-                 id: str = None,
-                 is_visible: bool = None
+                 actions: Action | ListLike[Action] = DefaultNone,
+                 fallback: Element = DefaultNone,
+                 height: Literal["auto", "stretch"] = DefaultNone,
+                 separator: bool = DefaultNone,
+                 spacing: Literal["default", "none", "small", "medium", "large", "extraLarge",
+                                  "padding"] | None = DefaultNone,
+                 id: str = DefaultNone,
+                 is_visible: bool = DefaultNone
                  ):
         self.type = "ActionSet"
+        if actions is DefaultNone:
+            actions = []
         self.actions: list = actions
         self.fallback = fallback
         self.height = height
@@ -372,9 +396,7 @@ class ActionSet(Mixin, Element):
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "actions":
             actions = __value
-            if actions is None:
-                actions = []
-            elif isinstance(actions, Action):
+            if isinstance(actions, Action):
                 actions = [actions]
             elif not isinstance(actions, list):
                 actions = list(actions)

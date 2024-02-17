@@ -2,7 +2,7 @@ from typing import Any
 from typing_extensions import Literal
 from adaptivecard._mixin import Mixin
 from adaptivecard._base_types import Element, Action
-from adaptivecard._typing import ListLike
+from adaptivecard._typing import ListLike, DefaultNone
 
 
 
@@ -18,9 +18,9 @@ class Content(Mixin):
 class Message(Mixin):
     """"Estrutura de mensagem. Um card precisa estar contido em uma mensagem para ser enviado via Teams."""
     __slots__ = ('type', 'attachments')
-    def __init__(self, attachments: ListLike["Content"] | None = None):
+    def __init__(self, attachments: ListLike["Content"] | None = DefaultNone):
         self.type = "message"
-        if attachments is None:
+        if attachments is DefaultNone:
             attachments = []
         self.attachments = list(attachments)
 
@@ -34,20 +34,20 @@ class AdaptiveCard(Mixin):
                  "rtl", "speak", "lang", "vertical_content_alignment")
     def __init__(self,
                  version: str | float = "1.2",
-                 body: Element | ListLike[Element] = None,
-                 actions: Action | ListLike[Action] = None,
-                 fallback_text: str = None,
-                 background_image: str = None,
-                 min_height: str = None,
-                 rtl: bool = None,
-                 speak: str = None,
-                 lang: str = None,
-                 vertical_content_alignment: Literal["top", "center", "bottom"] = None):
+                 body: Element | ListLike[Element] = DefaultNone,
+                 actions: Action | ListLike[Action] = DefaultNone,
+                 fallback_text: str = DefaultNone,
+                 background_image: str = DefaultNone,
+                 min_height: str = DefaultNone,
+                 rtl: bool = DefaultNone,
+                 speak: str = DefaultNone,
+                 lang: str = DefaultNone,
+                 vertical_content_alignment: Literal["top", "center", "bottom"] = DefaultNone):
         
         self.type = "AdaptiveCard"
         self.version = version  
         self.schema = "http://adaptivecards.io/schemas/adaptive-card.json"
-        if body is None:
+        if body is DefaultNone:
             body = []
         self.body: list = body
         self.actions = actions

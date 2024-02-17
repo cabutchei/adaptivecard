@@ -1,8 +1,10 @@
-from typing import Any, Optional, Union
+from typing import Any
 from typing_extensions import Literal
 from adaptivecard._base_types import Element
+from adaptivecard._typing import DefaultNone
 from adaptivecard._mixin import Mixin
 from adaptivecard.actions import Execute, OpenUrl, Submit, ToggleVisibilty
+from adaptivecard._utils import convert_to_pixel_string, raise_invalid_pixel_error
 
 
 
@@ -13,21 +15,21 @@ class TextBlock(Mixin, Element):
                  'height', 'separator', 'spacing', 'id', 'is_visible')
     def __init__(self,
                  text: Any,
-                 color: Literal["default", "dark", "light", "accent", "good", "warning", "attention"] = None,
-                 font_type: Literal["default", "monospace"] = None,
-                 horizontal_alignment: Literal["left", "center", "right"] = None,
-                 is_subtle: bool = None,
-                 max_lines: int = None,
-                 size: Literal["default", "small", "medium", "large", "extraLarge"] = None,
-                 weight: Literal["default", "lighter", "bolder"] = None,
-                 wrap: bool = None,
-                 style: Literal["default", "heading"] = None,
-                 fallback: str | Element = None,
-                 height: Literal["auto", "stretch"] = None,
-                 separator: bool = None,
-                 spacing: Literal["default", "none", "small", "medium", "large", "extraLarge", "padding"] = None,
-                 id: str = None,
-                 is_visible: bool = None):
+                 color: Literal["default", "dark", "light", "accent", "good", "warning", "attention"] = DefaultNone,
+                 font_type: Literal["default", "monospace"] = DefaultNone,
+                 horizontal_alignment: Literal["left", "center", "right"] = DefaultNone,
+                 is_subtle: bool = DefaultNone,
+                 max_lines: int = DefaultNone,
+                 size: Literal["default", "small", "medium", "large", "extraLarge"] = DefaultNone,
+                 weight: Literal["default", "lighter", "bolder"] = DefaultNone,
+                 wrap: bool = DefaultNone,
+                 style: Literal["default", "heading"] = DefaultNone,
+                 fallback: str | Element = DefaultNone,
+                 height: Literal["auto", "stretch"] = DefaultNone,
+                 separator: bool = DefaultNone,
+                 spacing: Literal["default", "none", "small", "medium", "large", "extraLarge", "padding"] = DefaultNone,
+                 id: str = DefaultNone,
+                 is_visible: bool = DefaultNone):
 
         self.type = "TextBlock"
         self.text = text
@@ -65,20 +67,20 @@ class Image(Mixin, Element):
                  "id", "is_visible")
     def __init__(self,
                  url: str,
-                 alt_text: str = None,
-                 background_color: str = None,
-                 height: str | Literal["auto", "stretch"] = None,
-                 horizontal_alignment: Literal["left", "center", "right"] = None,
-                 select_action: Execute | OpenUrl | Submit | ToggleVisibilty = None,
-                 size: Literal["auto", "stretch", "small", "medium", "large"] = None,
-                 style: Literal["default", "person"] = None,
-                 width: str = None,
-                 fallback: Element = None,
-                 separator: bool = None,
+                 alt_text: str = DefaultNone,
+                 background_color: str = DefaultNone,
+                 height: str | Literal["auto", "stretch"] = DefaultNone,
+                 horizontal_alignment: Literal["left", "center", "right"] = DefaultNone,
+                 select_action: Execute | OpenUrl | Submit | ToggleVisibilty = DefaultNone,
+                 size: Literal["auto", "stretch", "small", "medium", "large"] = DefaultNone,
+                 style: Literal["default", "person"] = DefaultNone,
+                 width: str = DefaultNone,
+                 fallback: Element = DefaultNone,
+                 separator: bool = DefaultNone,
                  spacing: Literal["default", "none", "medium", "large", "extraLarge",
-                                  "padding"] = None,
-                 id: str = None,
-                 is_visible: bool = None
+                                  "padding"] = DefaultNone,
+                 id: str = DefaultNone,
+                 is_visible: bool = DefaultNone
                 ):
 
         self.type = "Image"
@@ -96,3 +98,13 @@ class Image(Mixin, Element):
         self.spacing = spacing
         self.id = id
         self.is_visible = is_visible
+
+    def __setattr__(self, __name: str, __value: Any) -> None:
+        if __name == "width":
+            width = __value
+            try:
+                width = convert_to_pixel_string(width)
+            except ValueError:
+                raise_invalid_pixel_error(__name, width)
+            __value = width
+        return super().__setattr__(__name, __value)

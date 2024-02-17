@@ -32,3 +32,5 @@ class SequenceNotStr(Protocol[_T_co]):
         ...
 
 ListLike = SequenceNotStr
+
+DefaultNone = object()

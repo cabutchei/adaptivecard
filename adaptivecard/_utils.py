@@ -3,11 +3,19 @@ from types import NoneType, UnionType, GenericAlias
 from adaptivecard._typing import ListLike
 
 
-def is_parameterized_type(tp):
-    """
-    Checks if type is a GenericAlias.
-    """
-    return isinstance(tp, (GenericAlias, _GenericAlias))
+def raise_invalid_pixel_error(arg_name: str, arg_value: str):
+    msg = f"argument '{arg_name}' must be numeric or a number ending with 'px', got {arg_value} instead"
+    raise ValueError(msg)
+
+
+def convert_to_pixel_string(s):
+    if isinstance(s, str):
+        if not s.replace('px', '').isdecimal():
+            raise ValueError
+        s = s.replace('px', '') + 'px'
+    elif isinstance(s, int):
+        s = str(s) + 'px'
+    return s
 
 def is_union(tp):
     """
@@ -25,6 +33,11 @@ def is_type(tp):
     return (isinstance(tp, (type, GenericAlias, _GenericAlias)) and not isinstance(tp, UnionType)) \
     and get_origin(tp) is not Literal
 
+def is_parameterized_type(tp):
+    """
+    Checks if type is a GenericAlias.
+    """
+    return isinstance(tp, (GenericAlias, _GenericAlias))
 
 def check_type(arg_name: str | None, arg_value: Any, expected_type):
     """
