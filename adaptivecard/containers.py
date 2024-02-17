@@ -179,6 +179,7 @@ class ColumnSet(Mixin, Element, BaseColumnSet):
                 min_height = convert_to_pixel_string(min_height)
             except ValueError:
                 raise_invalid_pixel_error(__name, min_height)
+            __value = min_height
         return super().__setattr__(__name, __value)
 
 
