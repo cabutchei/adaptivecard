@@ -1,7 +1,6 @@
 from typing import Any, get_type_hints
 from adaptivecard._typing import DefaultNone
 from adaptivecard._utils import check_type, snake_to_camel
-from functools import partial
 
 
 class Mixin:
@@ -9,7 +8,7 @@ class Mixin:
 
     def to_dict(self):
         dic = {}
-        for attr_name, attr_value in zip(self.__slots__, map(partial(getattr, self), self.__slots__)):
+        for attr_name, attr_value in {attr_name: getattr(self, attr_name) for attr_name in self.__slots__ if hasattr(self, attr_name)}.items():
             camel_formated_attr_name = snake_to_camel(attr_name)
             if hasattr(attr_value, "__slots__"):
                 dic[camel_formated_attr_name] = attr_value.to_dict()
