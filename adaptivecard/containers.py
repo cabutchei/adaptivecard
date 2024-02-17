@@ -342,6 +342,17 @@ class Table(Mixin, Element):
     def __len__(self):
         return len(self.rows)
     
+    def __add__(self, value: ListLike):
+        if not isinstance(value, ListLike):
+            raise TypeError
+        value = list(value)
+        attrs = {getattr(self, attr_name)
+                 if attr_name != "rows"
+                 else getattr(self, attr_name) + value
+                 for attr_name in self.__slots__
+                 if hasattr(self, attr_name)}
+        return self.__class__(**attrs)
+    
     def __str__(self):
         rows = [["\n".join([str(item) for item in cell.items]) for cell in row.cells] for row in self.rows]
         if self.first_row_as_header:
