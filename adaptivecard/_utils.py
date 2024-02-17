@@ -4,7 +4,7 @@ from adaptivecard._typing import ListLike
 
 
 def raise_invalid_pixel_error(arg_name: str, arg_value: str):
-    msg = f"argument '{arg_name}' must be numeric or a number ending with 'px', got {arg_value} instead"
+    msg = f"argument '{arg_name}' must be numeric or a number ending with 'px', got '{arg_value}' instead"
     raise ValueError(msg)
 
 
@@ -49,8 +49,10 @@ def check_type(arg_name: str | None, arg_value: Any, expected_type):
     if is_union(expected_type):
         expected_type = get_args(expected_type)
 
-    if get_origin(expected_type) is Literal and arg_value not in (allowed_values := get_args(expected_type)):
-        raise TypeError(f"Argument '{arg_name}' must match one of the following values: {', '.join(allowed_values)}")
+    if get_origin(expected_type) is Literal:
+        if arg_value not in (allowed_values := get_args(expected_type)):
+            raise TypeError(f"Argument '{arg_name}' must match one of the following values: {', '.join(allowed_values)}")
+        return
 
     elif isinstance(expected_type, tuple):
         for sub_type in expected_type:
