@@ -1,20 +1,19 @@
-from typing_extensions import Literal
-from adaptivecard import AdaptiveCard
+from typing import Literal
 from adaptivecard._mixin import Mixin
-from adaptivecard._base_types import Action
+import adaptivecard._base_types as _base_types
 from adaptivecard._typing import ListLike, DefaultNone
 
 
-class ShowCard(Mixin, Action):
+class ShowCard(Mixin):
     __slots__ = ('type', 'title', 'icon_url', 'id', 'style', 'fallback', 'tooltip', 'is_enabled',
                  'mode', 'card')
     def __init__(self,
-                 card: AdaptiveCard,
+                 card: _base_types.AdaptiveCard,
                  title: str = DefaultNone,
                  icon_url: str = DefaultNone,
                  id: str = DefaultNone,
                  style: Literal["default", "positive", "destructive"] = DefaultNone,
-                 fallback: Action = DefaultNone,
+                 fallback: _base_types.Action = DefaultNone,
                  tooltip: str = DefaultNone,
                  is_enabled: bool = DefaultNone,
                  mode: Literal["primary", "secondary"] = DefaultNone):
@@ -31,14 +30,14 @@ class ShowCard(Mixin, Action):
         self.card = card
 
 
-class OpenUrl:
+class OpenUrl(Mixin):
     __slots__ = ("url", "title", "id", "style", "fallback", "tooltip", "is_enabled", "mode")
     def __init__(self,
                  url: str,
                  title: str = DefaultNone,
                  id: str = DefaultNone,
                  style: Literal["default", "positive", "destructive"] | None = DefaultNone,
-                 fallback: Action  = DefaultNone,
+                 fallback: _base_types.Action  = DefaultNone,
                  tooltip: str = DefaultNone,
                  is_enabled: bool = DefaultNone,
                  mode: Literal["primary", "secondary"] | None = DefaultNone):
@@ -54,7 +53,7 @@ class OpenUrl:
         self.mode = mode
 
 
-class Submit:
+class Submit(Mixin):
     __slots__ = ("data", "associated_inputs", "title", "icon_url", "id", "style", "fallback",
                  "tooltip", "is_enabled", "mode")
     def __init__(self,
@@ -64,7 +63,7 @@ class Submit:
                  icon_url: str = DefaultNone,
                  id: str = DefaultNone,
                  style: Literal["default", "positive", "destructive"] = DefaultNone,
-                 fallback: Action = DefaultNone,
+                 fallback: _base_types.Action = DefaultNone,
                  tooltip: str = DefaultNone,
                  is_enabled: bool = DefaultNone,
                  mode: Literal["primary", "secondary"] = DefaultNone):
@@ -82,7 +81,7 @@ class Submit:
         self.mode = mode
 
 
-class TargetElement:
+class TargetElement(Mixin):
     __slots__ = ("element_id", "is_visible")
     def __init__(self,
                  element_id: str,
@@ -91,7 +90,7 @@ class TargetElement:
         self.is_visible = is_visible
 
 
-class ToggleVisibilty:
+class ToggleVisibilty(Mixin):
     __slots__ = ("data", "target_elements", "icon_url", "title", "id", "style", "fallback",
                  "tooltip", "is_enabled", "mode")
     def __init__(self,
@@ -101,7 +100,7 @@ class ToggleVisibilty:
                  title: str = DefaultNone,
                  id: str = DefaultNone,
                  style: Literal["default", "positive", "destructive"] = DefaultNone,
-                 fallback: Action = DefaultNone,
+                 fallback: _base_types.Action = DefaultNone,
                  tooltip: str = DefaultNone,
                  is_enabled: bool = DefaultNone,
                  mode: Literal["primary", "secondary"] = DefaultNone):
@@ -117,7 +116,7 @@ class ToggleVisibilty:
         self.mode = mode
 
     
-class Execute:
+class Execute(Mixin):
     __slots__ = ()
     def __init__(self,
                  verb: str = DefaultNone,
@@ -127,8 +126,27 @@ class Execute:
                  icon_url: str = DefaultNone,
                  id: str = DefaultNone,
                  style: Literal["default", "positive", "destructive"] = DefaultNone,
-                 fallback: Action = DefaultNone,
+                 fallback: _base_types.Action = DefaultNone,
                  tooltip: str = DefaultNone,
                  is_enabled: bool = DefaultNone,
                  mode: Literal["primary", "secondary"] = DefaultNone):
-        pass
+        
+        self.type = "Input.Execute"
+        self.verb = verb
+        self.data = data
+        self.associated_inputs = associated_inputs
+        self.title = title
+        self.icon_url = icon_url
+        self.id = id
+        self.style = style
+        self.fallback = fallback
+        self.tooltip = tooltip
+        self.is_enabled = is_enabled
+        self.mode = mode
+
+
+_base_types.ShowCard.register(ShowCard)
+_base_types.OpenUrl.register(OpenUrl)
+_base_types.Submit.register(Submit)
+_base_types.ToggleVisibility.register(ToggleVisibilty)
+_base_types.Execute.register(Execute)

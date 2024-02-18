@@ -69,7 +69,7 @@ def check_type(arg_name: str | None, arg_value: Any, expected_type):
             check_type(arg_name, arg_value, type_origin)
             container = arg_value
             if type_origin is tuple:
-                ...
+                ... # devo tratar tuplas? Se sim, como?
             else:
                 for i, item in enumerate(container):
                     try:

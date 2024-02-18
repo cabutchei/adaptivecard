@@ -1,64 +1,124 @@
+from abc import ABC
 
-class Element:
-    __slots__ = ()
 
-class Action:
-    pass
 
-class Execute(Action):
-    pass
-
-class OpenUrl(Action):
-    pass
-
-class Submit(Action):
-    pass
-
-class ToggleVisibility(Action):
-    pass
-
-class ISelectAction:
-    pass
-
-class BaseTableRow:
+class Element(ABC):
     pass
 
 
-class BaseTableCell:
+class AdaptiveCard(ABC):
     pass
 
 
-class BaseContent:
+class ActionSet(ABC):
     pass
 
 
-class BaseMessage:
+class Action(ABC):
     pass
 
 
-class BaseAdaptiveCard:
+class ShowCard(ABC):
     pass
 
 
-class BaseContainer:
+class Execute(ABC):
     pass
 
 
-class BaseColumnSet:
+class OpenUrl(ABC):
     pass
 
 
-class BaseColumn:
+class Submit(ABC):
     pass
 
 
-class BaseTable:
+class ToggleVisibility(ABC):
     pass
 
 
-class BaseTextBlock:
+class TableRow(ABC):
     pass
 
 
-class BaseImage:
+class TableCell(ABC):
     pass
+
+
+class Content(ABC):
+    pass
+
+
+class Message(ABC):
+    pass
+
+
+class Container(ABC):
+    pass
+
+
+class ColumnSet(ABC):
+    pass
+
+
+class Column(ABC):
+    pass
+
+
+class Table(ABC):
+    pass
+
+
+class TextBlock(ABC):
+    pass
+
+
+class Image(ABC):
+    pass
+
+
+class Text(ABC):
+    pass
+
+
+class Number(ABC):
+    pass
+
+
+class Date(ABC):
+    pass
+
+
+class Time(ABC):
+    pass
+
+
+class Toggle(ABC):
+    pass
+
+
+class Choice(ABC):
+    pass
+
+
+class ChoiceSet(ABC):
+    pass
+
+
+Element.register(AdaptiveCard)
+Element.register(Table)
+Element.register(TableRow)
+Element.register(TableCell)
+Element.register(ColumnSet)
+Element.register(Column)
+Element.register(Container)
+Element.register(TextBlock)
+Element.register(Image)
+Element.register(Message)
+Element.register(Content)
+Element.register(Action)
+Action.register(Execute)
+Action.register(OpenUrl)
+Action.register(Submit)
+Action.register(ToggleVisibility)

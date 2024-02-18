@@ -1,14 +1,13 @@
 from typing import Any
 from typing_extensions import Literal
-from adaptivecard._base_types import Element
+import adaptivecard._base_types as _base_types
 from adaptivecard._typing import DefaultNone
 from adaptivecard._mixin import Mixin
-from adaptivecard.actions import Execute, OpenUrl, Submit, ToggleVisibilty
 from adaptivecard._utils import convert_to_pixel_string, raise_invalid_pixel_error
 
 
 
-class TextBlock(Mixin, Element):
+class TextBlock(Mixin):
     """Elemento de texto"""
     __slots__ = ('type', 'text', 'color', 'font_type', 'horizontal_alignment', 'is_subtle',
                  'max_lines', 'size', 'weight', 'wrap', 'style', 'fallback',
@@ -24,7 +23,7 @@ class TextBlock(Mixin, Element):
                  weight: Literal["default", "lighter", "bolder"] = DefaultNone,
                  wrap: bool = DefaultNone,
                  style: Literal["default", "heading"] = DefaultNone,
-                 fallback: str | Element = DefaultNone,
+                 fallback: str | _base_types.Element = DefaultNone,
                  height: Literal["auto", "stretch"] = DefaultNone,
                  separator: bool = DefaultNone,
                  spacing: Literal["default", "none", "small", "medium", "large", "extraLarge", "padding"] | None = DefaultNone,
@@ -61,7 +60,7 @@ class TextBlock(Mixin, Element):
         return super().__setattr__(__name, __value)
 
 
-class Image(Mixin, Element):
+class Image(Mixin):
     __slots__ = ("type", "url", "alt_text", "background_color", "height", "horizontal_alignment",
                  "select_action", "size", "style", "width", "fallback", "separator", "spacing",
                  "id", "is_visible")
@@ -71,11 +70,12 @@ class Image(Mixin, Element):
                  background_color: str = DefaultNone,
                  height: str | Literal["auto", "stretch"] = DefaultNone,
                  horizontal_alignment: Literal["left", "center", "right"] = DefaultNone,
-                 select_action: Execute | OpenUrl | Submit | ToggleVisibilty = DefaultNone,
+                 select_action: _base_types.Execute | _base_types.OpenUrl | _base_types.Submit |
+                 _base_types.ToggleVisibility = DefaultNone,
                  size: Literal["auto", "stretch", "small", "medium", "large"] = DefaultNone,
                  style: Literal["default", "person"] = DefaultNone,
                  width: str = DefaultNone,
-                 fallback: Element = DefaultNone,
+                 fallback: _base_types.Element = DefaultNone,
                  separator: bool = DefaultNone,
                  spacing: Literal["default", "none", "medium", "large", "extraLarge",
                                   "padding"] = DefaultNone,
@@ -108,3 +108,7 @@ class Image(Mixin, Element):
                 raise_invalid_pixel_error(__name, width)
             __value = width
         return super().__setattr__(__name, __value)
+
+
+_base_types.TextBlock.register(TextBlock)
+_base_types.Image.register(Image)

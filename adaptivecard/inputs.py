@@ -1,10 +1,10 @@
-from typing import Any, Literal, Iterable
-from adaptivecard._base_types import Element, ISelectAction
+from typing import Any, Literal
+import adaptivecard._base_types as _base_types
 from adaptivecard._typing import ListLike, DefaultNone
 from adaptivecard._mixin import Mixin
 
 
-class Text:
+class Text(Mixin):
     __slots__ = ("type", "id", "is_multiline", "max_length", "placeholder",
                  "regex", "style", "inline_action", "value", "wrap", "error_message",
                  "is_required", "label", "fallback", "height", "separator", "spacing", "is_visible")
@@ -16,12 +16,12 @@ class Text:
                  placeholder : str = DefaultNone,
                  regex: str = DefaultNone,
                  style: str = DefaultNone,
-                 inline_action : ISelectAction = DefaultNone,
+                 inline_action : _base_types.Action = DefaultNone,
                  value: str = DefaultNone,
                  error_message: str = DefaultNone,
                  is_required : bool = DefaultNone,
                  label: str = DefaultNone,
-                 fallback: Element = DefaultNone,
+                 fallback: _base_types.Element = DefaultNone,
                  height: Literal["auto", "stretch"] = DefaultNone,
                  separator: bool = DefaultNone,
                  spacing: Literal["default", "none", "small", "medium", "large", "extraLarge",
@@ -47,7 +47,7 @@ class Text:
         self.is_visible = is_visible
 
 
-class Number:
+class Number(Mixin):
     __slots__ = ("type", "id", "max", "min", "placeholder",
                  "value", "wrap", "error_message", "is_required", "label", "fallback",
                  "height", "separator", "spacing", "is_visible")
@@ -61,7 +61,7 @@ class Number:
                  error_message: str = DefaultNone,
                  is_required : bool = DefaultNone,
                  label: str = DefaultNone,
-                 fallback: Element = DefaultNone,
+                 fallback: _base_types.Element = DefaultNone,
                  height: Literal["auto", "stretch"] = DefaultNone,
                  separator: bool = DefaultNone,
                  spacing: Literal["default", "none", "small", "medium", "large", "extraLarge",
@@ -85,7 +85,7 @@ class Number:
         self.is_visible = is_visible
 
 
-class Date:
+class Date(Mixin):
     __slots__ = ("type", "id", "max", "min", "placeholder", "value", "error_message", "is_required",
                  "label", "fallback", "height", "separator", "spacing", "is_visible")
     def __init__(self,
@@ -97,7 +97,7 @@ class Date:
                  error_message: str = DefaultNone,
                  is_required : bool = DefaultNone,
                  label: str = DefaultNone,
-                 fallback: Element = DefaultNone,
+                 fallback: _base_types.Element = DefaultNone,
                  height: Literal["auto", "stretch"] = DefaultNone,
                  separator: bool = DefaultNone,
                  spacing: Literal["default", "none", "small", "medium", "large", "extraLarge",
@@ -120,7 +120,7 @@ class Date:
         self.is_visible = is_visible
 
 
-class Time:
+class Time(Mixin):
     __slots__ = ("type", "id", "max", "min", "placeholder", "value", "error_message", "is_required",
                  "label", "fallback", "height", "separator", "spacing", "is_visible")
     def __init__(self,
@@ -132,7 +132,7 @@ class Time:
                  error_message: str = DefaultNone,
                  is_required : bool = DefaultNone,
                  label: str = DefaultNone,
-                 fallback: Element = DefaultNone,
+                 fallback: _base_types.Element = DefaultNone,
                  height: Literal["auto", "stretch"] = DefaultNone,
                  separator: bool = DefaultNone,
                  spacing: Literal["default", "none", "small", "medium", "large", "extraLarge",
@@ -155,7 +155,7 @@ class Time:
         self.is_visible = is_visible        
 
 
-class DataQuery:
+class DataQuery(Mixin):
     __slots__ = ("type", "dataset", "count", "skip")
     def __init__(self,
                  dataset: str,
@@ -169,7 +169,7 @@ class DataQuery:
         self.skip = skip
 
 
-class Toggle:
+class Toggle(Mixin):
     __slots__ = ()
     def __init__(self,
                  title: str,
@@ -181,7 +181,7 @@ class Toggle:
                  error_message: str = DefaultNone,
                  is_required : bool = DefaultNone,
                  label: str = DefaultNone,
-                 fallback: Element = DefaultNone,
+                 fallback: _base_types.Element = DefaultNone,
                  height: Literal["auto", "stretch"] = DefaultNone,
                  separator: bool = DefaultNone,
                  spacing: Literal["default", "none", "small", "medium", "large", "extraLarge",
@@ -205,7 +205,7 @@ class Toggle:
         self.is_visible = is_visible  
 
 
-class Choice:
+class Choice(Mixin):
     __slots__ = ("title", "value")
     def __init__(self,
                  title: str,
@@ -231,7 +231,7 @@ class ChoiceSet(Mixin):
                  error_message: str = DefaultNone,
                  is_required : bool = DefaultNone,
                  label: str = DefaultNone,
-                 fallback: Element = DefaultNone,
+                 fallback: _base_types.Element = DefaultNone,
                  height: Literal["auto", "stretch"] = DefaultNone,
                  separator: bool = DefaultNone,
                  spacing: Literal["default", "none", "small", "medium", "large", "extraLarge",
@@ -276,4 +276,14 @@ class ChoiceSet(Mixin):
                 choices = list(choices)
             
         return super().__setattr__(__name, __value)
+    
+
+_base_types.Text.register(Text)
+_base_types.Number.register(Number)
+_base_types.Date.register(Date)
+_base_types.Time.register(Time)
+_base_types.Toggle.register(Toggle)
+_base_types.Choice.register(Choice)
+_base_types.ChoiceSet.register(ChoiceSet)
+
 

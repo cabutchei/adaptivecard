@@ -1,7 +1,7 @@
 from typing import Any
 from typing_extensions import Literal
 from adaptivecard._mixin import Mixin
-from adaptivecard._base_types import Element, Action
+import adaptivecard._base_types as _base_types
 from adaptivecard._typing import ListLike, DefaultNone
 
 
@@ -10,7 +10,7 @@ from adaptivecard._typing import ListLike, DefaultNone
 class Content(Mixin):
     """Content é o elemento que recebe o AdaptiveCard e é adicionado à lista atachments, atributo de Message"""
     __slots__ = ("content_type", "content")
-    def __init__(self, content: "AdaptiveCard"):
+    def __init__(self, content: _base_types.AdaptiveCard):
         self.content_type = "application/vnd.microsoft.card.adaptive"
         self.content = content
 
@@ -18,7 +18,7 @@ class Content(Mixin):
 class Message(Mixin):
     """"Estrutura de mensagem. Um card precisa estar contido em uma mensagem para ser enviado via Teams."""
     __slots__ = ('type', 'attachments')
-    def __init__(self, attachments: ListLike["Content"] | None = DefaultNone):
+    def __init__(self, attachments: ListLike[_base_types.Content] | None = DefaultNone):
         self.type = "message"
         if attachments is DefaultNone:
             attachments = []
@@ -34,8 +34,8 @@ class AdaptiveCard(Mixin):
                  "rtl", "speak", "lang", "vertical_content_alignment")
     def __init__(self,
                  version: str | float = "1.2",
-                 body: Element | ListLike[Element] = DefaultNone,
-                 actions: Action | ListLike[Action] = DefaultNone,
+                 body: _base_types.Element | ListLike[_base_types.Element] = DefaultNone,
+                 actions: _base_types.Action | ListLike[_base_types.Action] = DefaultNone,
                  fallback_text: str = DefaultNone,
                  background_image: str = DefaultNone,
                  min_height: str = DefaultNone,
@@ -63,7 +63,7 @@ class AdaptiveCard(Mixin):
     def empty(self):
         return len(self.body) == 0
 
-    def append(self, element: Element):
+    def append(self, element: _base_types.Element):
         self.body.append(element)
 
     def append_action(self, action):
@@ -82,8 +82,13 @@ class AdaptiveCard(Mixin):
             if isinstance(version, float):
                 version = str(version)
             __value = version
-        if __name == 'body' and isinstance(__value, Element):
+        if __name == 'body' and isinstance(__value, _base_types.Element):
             __value = [__value]
-        if __name == 'actions' and isinstance(__value, Action):
+        if __name == 'actions' and isinstance(__value, _base_types.Action):
             __value = [__value]
         return super().__setattr__(__name, __value)
+    
+
+_base_types.AdaptiveCard.register(AdaptiveCard)
+_base_types.Content.register(Content)
+_base_types.Message.register(Message)
