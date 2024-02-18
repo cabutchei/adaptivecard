@@ -1,9 +1,10 @@
-from typing import Any, get_type_hints
+from typing import Any
 from typing_extensions import Literal
+from sys import maxsize
 from adaptivecard._base_types import Element, Action, BaseColumnSet, BaseColumn, Execute, OpenUrl, Submit, ToggleVisibility
 from adaptivecard._mixin import Mixin
 from adaptivecard.card_elements import TextBlock
-from adaptivecard._utils import check_type, convert_to_pixel_string, raise_invalid_pixel_error
+from adaptivecard._utils import convert_to_pixel_string, raise_invalid_pixel_error
 from adaptivecard._typing import ListLike, DefaultNone
 from tabulate import tabulate
 
@@ -116,14 +117,11 @@ class Column(Mixin, Element, BaseColumn):
             items = __value
             if not isinstance(items, list):
                 __value = list(items)
-        elif __name == "min_height":
-            min_height = __value
-            if isinstance(min_height, int):
-                __value = str(min_height) + "px"
-        elif __name == "width":
-            width = __value
-            if isinstance(width, int):
-                __value = str(width) + "px"
+        elif __name == "min_height" or __name == "width":
+            try:
+                __value = convert_to_pixel_string(__value)
+            except ValueError:
+                raise_invalid_pixel_error(__name, __value)
         return super().__setattr__(__name, __value)
 
 
@@ -183,10 +181,14 @@ class ColumnSet(Mixin, Element, BaseColumnSet):
         return super().__setattr__(__name, __value)
 
 
-
 class TableCell(Mixin):
     __slots__ = ('type', 'items', 'select_action', 'style', 'vertical_alignment', 'bleed',
                  'background_image', 'min_height', 'rtl')
+    def __new__(cls, *args, **kwargs):
+        if len(args) == 1 and not kwargs and isinstance(args[0], cls):
+            return args[0]
+        else:
+            return super().__new__(cls)
     def __init__(self,
                  items: Any | ListLike[Any] = DefaultNone,
                  select_action: Execute | OpenUrl | Submit | ToggleVisibility = DefaultNone,
@@ -243,26 +245,45 @@ class TableCell(Mixin):
         return super().__setattr__(__name, __value)
 
 
-class TableRow(Mixin, ListLike):
+class TableRow(Mixin):
     __slots__ = ("type", "cells", "style")
+    def __new__(cls, *args, **kwargs):
+        if len(args) == 1 and not kwargs and isinstance(args[0], TableRow):
+            return args[0]
+        else:
+            return super().__new__(cls)
     def __init__(self,
-                 cells: ListLike[Any],
+                 cells: ListLike[Any] = None,
                  style: Literal["default", "emphasis", "good", "attention", "warning",
                                 "accent"] = DefaultNone):
         self.type = "TableRow"
-        for i, cell in enumerate(cells):
-            if not isinstance(cell, TableCell):
-                cells[i] = TableCell(cell)
+        if cells is None:
+            cells = []
         self.cells = cells
         self.style = style
+    
+    def append(self, value: Any):
+        self.cells.append(TableCell(value))
 
     def __getitem__(self, __i):
         if isinstance(__i, slice):
             return self.__class__(cells=self.cells[__i])
         return self.cells.__getitem__(__i)
+    
+    def __contains__(self, value):
+        return value in self.cells
 
     def __setitem__(self, __key, __value):
         self.cells.__setitem__(__key, TableCell(__value))
+    
+    def __setattr__(self, __name: str, __value: Any) -> None:
+        if __name == "cells":
+            cells = __value
+            if not isinstance(cells, ListLike):
+                raise TypeError
+            cells = [TableCell(cell) for cell in cells]
+            __value = cells
+        return super().__setattr__(__name, __value)
 
     def __add__(self, __value):
         return self.__class__(self.cells + __value.cells)
@@ -272,6 +293,20 @@ class TableRow(Mixin, ListLike):
 
     def __iter__(self):
         return iter(self.cells)
+    
+    def index(self, value=1, start: int = 0, stop: int = maxsize, /):
+        return self.cells.index(value, start, stop)
+
+    def count(self, value, /):
+        return self.cells.count(value)
+    
+    def __reversed__(self):
+        attrs = {attr_name: getattr(self, attr_name)
+                 if attr_name != "cells"
+                 else reversed(getattr(self, attr_name))
+                 for attr_name in self.__slots__
+                 if hasattr(self, attr_name)}
+        return self.__class__(**attrs)
 
     def __repr__(self):
         return f"{self.__class__.__name__}({str(self.cells)})"
@@ -285,7 +320,7 @@ class Table(Mixin, Element):
                  'horizontal_cell_content_alignment', 'vertical_content_alignment', 'fallback', 'height',
                  'separator', 'spacing', 'id', 'is_visible')
     def __init__(self,
-                 rows: ListLike[ListLike[Element | TableCell]] = DefaultNone,
+                 rows: ListLike[ListLike[Any]] = DefaultNone,
                  first_row_as_header: bool = DefaultNone,
                  columns: ListLike[int] = DefaultNone,
                  show_grid_lines: bool = DefaultNone,
@@ -322,11 +357,11 @@ class Table(Mixin, Element):
         return self.rows.__getitem__(__i)
     
     def append(self, row: ListLike):
-        type_hints = get_type_hints(self.__init__)
-        check_type('row', row, type_hints.get('row', Any))
-        if not isinstance(row, TableRow):
-            row = TableRow(row)
-        self.rows.append(row)
+        # type_hints = get_type_hints(self.__init__)
+        # check_type('row', row, type_hints.get('row', Any))
+        # if not isinstance(row, TableRow):
+        #     row = TableRow(row)
+        self.rows.append(TableRow(row))
     
     # custom to_dict para lidar com o formato atípico do atributo columns dentro do json
     def to_dict(self):
@@ -345,7 +380,7 @@ class Table(Mixin, Element):
     
     def __add__(self, value: ListLike):
         if not isinstance(value, ListLike):
-            raise TypeError
+            raise TypeError("Can only add a list-like value to a Table")
         value = list(value)
         attrs = {getattr(self, attr_name)
                  if attr_name != "rows"
@@ -356,12 +391,11 @@ class Table(Mixin, Element):
     
     def __str__(self):
         rows = [["\n".join([str(item) for item in cell.items]) for cell in row.cells] for row in self.rows]
-        if self.first_row_as_header:
-            headers = rows[0]
-            rows = rows[1:]
-        else:
-            headers = []
-        return tabulate(rows, headers=headers, tablefmt='grid')
+        if getattr(self, "first_row_as_header", False) and self.rows:
+            headers, *rows = rows
+            return tabulate(rows, headers, tablefmt='grid')
+
+        return tabulate(rows, tablefmt='grid')
 
     def __iter__(self):
         return iter(self.rows)
@@ -369,12 +403,10 @@ class Table(Mixin, Element):
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "rows":
             rows = __value
-            for i, row in enumerate(rows):
-                for j, cell in enumerate(row):
-                    if not isinstance(cell, TableCell):
-                        row[j] = TableCell(cell)
-                if not isinstance(row, TableRow):
-                    rows[i] = TableRow(cells=row)
+            if not isinstance(rows, ListLike) or \
+            not all([isinstance(item, ListLike) for item in rows]):
+                raise TypeError("argument 'rows' must be a collection of collections")
+            rows = [TableRow(row) for row in rows]
             __value = rows
         return super().__setattr__(__name, __value)
 
