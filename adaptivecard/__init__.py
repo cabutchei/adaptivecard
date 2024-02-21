@@ -2,7 +2,7 @@ from typing import Any
 from typing_extensions import Literal
 from adaptivecard._mixin import Mixin
 import adaptivecard._base_types as _base_types
-from adaptivecard._typing import ListLike, DefaultNone
+from adaptivecard._typing import ListLike, DefaultNone, Liszt
 
 
 
@@ -18,7 +18,7 @@ class Content(Mixin):
 class Message(Mixin):
     """"Estrutura de mensagem. Um card precisa estar contido em uma mensagem para ser enviado via Teams."""
     __slots__ = ('type', 'attachments')
-    def __init__(self, attachments: ListLike[_base_types.Content] | None = DefaultNone):
+    def __init__(self, attachments: ListLike[_base_types.Content] = DefaultNone):
         self.type = "message"
         if attachments is DefaultNone:
             attachments = []
@@ -48,7 +48,7 @@ class AdaptiveCard(Mixin):
         self.version = version  
         self.schema = "http://adaptivecards.io/schemas/adaptive-card.json"
         if body is DefaultNone:
-            body = []
+            body = Liszt()
         self.body: list = body
         self.actions = actions
         self.fallback_text = fallback_text
@@ -63,10 +63,14 @@ class AdaptiveCard(Mixin):
     def empty(self):
         return len(self.body) == 0
 
-    def append(self, element: _base_types.Element):
-        self.body.append(element)
+    def append(self, value: _base_types.Element, /):
+        if not isinstance(value, _base_types.Element):
+            raise TypeError("Can only append an Element")
+        self.body.append(value)
 
-    def append_action(self, action):
+    def append_action(self, action: _base_types.Action, /):
+        if not isinstance(action, _base_types.Action):
+            raise TypeError("Can only append an Action")
         if not hasattr(self, 'actions'):
             self.actions = []
         self.actions.append(action)
@@ -82,9 +86,8 @@ class AdaptiveCard(Mixin):
             if isinstance(version, float):
                 version = str(version)
             __value = version
-        if __name == 'body' and isinstance(__value, _base_types.Element):
-            __value = [__value]
-        if __name == 'actions' and isinstance(__value, _base_types.Action):
+        if __name == 'body' and isinstance(__value, _base_types.Element) \
+            or __name == 'actions' and isinstance(__value, _base_types.Action):
             __value = [__value]
         return super().__setattr__(__name, __value)
     

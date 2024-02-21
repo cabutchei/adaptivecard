@@ -1,4 +1,5 @@
-from typing import Protocol, Sequence, Iterator, TypeVar, Any, SupportsIndex, overload, runtime_checkable
+from typing import Protocol, Sequence, Iterator, Iterable, TypeVar, Any, SupportsIndex, overload, runtime_checkable
+from adaptivecard._base_types import Element
 
 
 _T_co = TypeVar("_T_co", covariant=True)
@@ -34,3 +35,21 @@ class SequenceNotStr(Protocol[_T_co]):
 ListLike = SequenceNotStr
 
 DefaultNone = object()
+
+
+class Liszt(list):
+    def __init__(self, data=None) -> None:
+        if data is None: data = []
+        super().__init__(data)
+    def append(self, __object) -> None:
+        if not isinstance(__object, Element):
+            raise TypeError(f"{type(self).__name__} object only accepts items of type {Element.__name__}")
+        return super().append(__object)
+    def insert(self, __index: SupportsIndex, __object: Any) -> None:
+        if not isinstance(__object, Element):
+            raise TypeError(f"{type(self).__name__} object only accepts items of type {Element.__name__}")
+        return super().insert(__index, __object)
+    def __setitem__(self, __key, __value, /):
+        if not isinstance(__value, Element):
+            raise TypeError
+        return super().__setitem__(__key, __value)

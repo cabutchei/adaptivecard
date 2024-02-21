@@ -51,7 +51,7 @@ def check_type(arg_name: str | None, arg_value: Any, expected_type):
 
     if get_origin(expected_type) is Literal:
         if arg_value not in (allowed_values := get_args(expected_type)):
-            raise TypeError(f"Argument '{arg_name}' must match one of the following values: {', '.join(allowed_values)}")
+            raise ValueError(f"Argument '{arg_name}' must match one of the following values: {', '.join(allowed_values)}")
         return
 
     elif isinstance(expected_type, tuple):

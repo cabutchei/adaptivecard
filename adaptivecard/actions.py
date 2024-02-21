@@ -36,11 +36,11 @@ class OpenUrl(Mixin):
                  url: str,
                  title: str = DefaultNone,
                  id: str = DefaultNone,
-                 style: Literal["default", "positive", "destructive"] | None = DefaultNone,
+                 style: Literal["default", "positive", "destructive"] = DefaultNone,
                  fallback: _base_types.Action  = DefaultNone,
                  tooltip: str = DefaultNone,
                  is_enabled: bool = DefaultNone,
-                 mode: Literal["primary", "secondary"] | None = DefaultNone):
+                 mode: Literal["primary", "secondary"] = DefaultNone):
 
         self.type = "Action.OpenUrl"
         self.title = title
@@ -54,11 +54,11 @@ class OpenUrl(Mixin):
 
 
 class Submit(Mixin):
-    __slots__ = ("data", "associated_inputs", "title", "icon_url", "id", "style", "fallback",
+    __slots__ = ("type", "data", "associated_inputs", "title", "icon_url", "id", "style", "fallback",
                  "tooltip", "is_enabled", "mode")
     def __init__(self,
                  data: dict,
-                 associated_inputs: Literal["auto", "none"], 
+                 associated_inputs: Literal["auto", "none"] | None,
                  title: str = DefaultNone,
                  icon_url: str = DefaultNone,
                  id: str = DefaultNone,
@@ -91,7 +91,7 @@ class TargetElement(Mixin):
 
 
 class ToggleVisibilty(Mixin):
-    __slots__ = ("data", "target_elements", "icon_url", "title", "id", "style", "fallback",
+    __slots__ = ("type", "data", "target_elements", "icon_url", "title", "id", "style", "fallback",
                  "tooltip", "is_enabled", "mode")
     def __init__(self,
                  data: str | dict,
@@ -104,6 +104,8 @@ class ToggleVisibilty(Mixin):
                  tooltip: str = DefaultNone,
                  is_enabled: bool = DefaultNone,
                  mode: Literal["primary", "secondary"] = DefaultNone):
+
+        self.type = "Input.ToggleVisibility"
         self.data = data
         self.target_elements = target_elements
         self.icon_url = icon_url
@@ -121,7 +123,7 @@ class Execute(Mixin):
     def __init__(self,
                  verb: str = DefaultNone,
                  data: dict = DefaultNone,
-                 associated_inputs: Literal["auto", "none"] = DefaultNone,
+                 associated_inputs: Literal["auto", "none"] | None = DefaultNone,
                  title: str = DefaultNone,
                  icon_url: str = DefaultNone,
                  id: str = DefaultNone,
