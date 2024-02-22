@@ -1,20 +1,21 @@
 import pytest
 from adaptivecard.containers import Container, ColumnSet, Column, Table, TableRow, ActionSet
+from adaptivecard.exceptions import *
 
 
 class Test:
     def test_container(self):
         container = Container()
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             Container((1,2,3))
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueCheckError):
             container.style = "wrong value"
         with pytest.raises(AttributeError):
             container.wrong_attribute = "value"
 
     def test_column_set(self):
         column_set = ColumnSet()
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeCheckError):
             column_set.horizontal_alignment = "Left"
         with pytest.raises(ValueError):
             column_set.min_height = "20pc"
@@ -29,7 +30,7 @@ class Test:
     def test_table_row(self):
         table_row = TableRow(cells=[1,2,3])
         assert table_row[2][0].text == '3'
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueCheckError):
             table_row.style = "wrong style"
     
     def test_action_set(self):

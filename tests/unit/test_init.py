@@ -2,12 +2,13 @@ import pytest
 from adaptivecard import AdaptiveCard
 from adaptivecard.card_elements import TextBlock
 from adaptivecard.containers import Container
+from adaptivecard.exceptions import *
 
 
 class Test:
     def test_(self):
         card = AdaptiveCard()
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             AdaptiveCard([1,2,3])
         with pytest.raises(TypeError):
             card.append("")

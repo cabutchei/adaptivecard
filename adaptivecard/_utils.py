@@ -1,6 +1,8 @@
 from typing import get_origin, get_args, Union, Literal, Any, _GenericAlias
 from types import NoneType, UnionType, GenericAlias
 from adaptivecard._typing import ListLike
+from adaptivecard.exceptions import TypeCheckError, ValueCheckError, WrongLiteral, WrongType, WrongTypes, WrongItem, NotListLike
+from json import dump
 
 
 def raise_invalid_pixel_error(arg_name: str, arg_value: str):
@@ -51,17 +53,17 @@ def check_type(arg_name: str | None, arg_value: Any, expected_type):
 
     if get_origin(expected_type) is Literal:
         if arg_value not in (allowed_values := get_args(expected_type)):
-            raise ValueError(f"Argument '{arg_name}' must match one of the following values: {', '.join(allowed_values)}")
+            raise WrongLiteral(arg_name, allowed_values)
         return
 
     elif isinstance(expected_type, tuple):
         for sub_type in expected_type:
             try:
                 return check_type(arg_name, arg_value, sub_type)
-            except TypeError:
+            except (TypeCheckError, ValueCheckError):
                 continue
         else:
-            raise TypeError(f"Argument '{arg_name}' of type {type(arg_value).__name__} is not of an allowed type")
+            raise WrongTypes(arg_name, arg_value)
     elif is_type(expected_type):
         if is_parameterized_type(expected_type):
             type_origin = get_origin(expected_type)
@@ -74,15 +76,15 @@ def check_type(arg_name: str | None, arg_value: Any, expected_type):
                 for i, item in enumerate(container):
                     try:
                         check_type(arg_name, item, type_subscripts)
-                    except:
-                        raise TypeError(f"Item {i} of {arg_name}")
+                    except (TypeCheckError, ValueCheckError):
+                        raise WrongItem(arg_name, i)
                 return
         else:
             if (expected_type is NoneType and arg_value is not None) or \
                 (not isinstance(arg_value, expected_type)):
                 if expected_type is ListLike:
-                    raise TypeError(f"Argument '{arg_name}' must be a collection of some kind, got {type(arg_value).__name__} instead")
-                raise TypeError(f"Expected argument '{arg_name}' to an instance of {expected_type.__name__}, got {type(arg_value).__name__} instead")
+                    raise NotListLike(arg_name, arg_value)
+                raise WrongType(arg_name, arg_value, expected_type)
             return
     else:
         raise Exception("Invalid!")  
@@ -100,3 +102,9 @@ def snake_to_camel(s: str):
         if i > 0:
             l[i] = word.capitalize()
     return "".join(l)
+
+def save_json(path: str, obj: dict, indent: int = 4):
+    if not isinstance(indent, int):
+        raise TypeError
+    with open(path, 'w') as f:
+        dump(obj, f, indent=indent)

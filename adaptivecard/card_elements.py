@@ -68,7 +68,7 @@ class Image(Mixin):
                  url: str,
                  alt_text: str = DefaultNone,
                  background_color: str = DefaultNone,
-                 height: str | Literal["auto", "stretch"] = DefaultNone,
+                 height: int | str | Literal["auto", "stretch"] = DefaultNone,
                  horizontal_alignment: Literal["left", "center", "right"] = DefaultNone,
                  select_action: _base_types.Execute | _base_types.OpenUrl | _base_types.Submit |
                  _base_types.ToggleVisibility = DefaultNone,
@@ -78,7 +78,7 @@ class Image(Mixin):
                  fallback: _base_types.Element = DefaultNone,
                  separator: bool = DefaultNone,
                  spacing: Literal["default", "none", "medium", "large", "extraLarge",
-                                  "padding"] = DefaultNone,
+                                  "padding"] | None = DefaultNone,
                  id: str = DefaultNone,
                  is_visible: bool = DefaultNone
                 ):
@@ -107,6 +107,13 @@ class Image(Mixin):
             except ValueError:
                 raise_invalid_pixel_error(__name, width)
             __value = width
+        elif __name == "height":
+            if __value not in ["auto", "stretch"]:
+                if isinstance(__value, (str, int)):
+                    try:
+                        __value = convert_to_pixel_string(__value)
+                    except ValueError:
+                        raise_invalid_pixel_error()
         return super().__setattr__(__name, __value)
 
 

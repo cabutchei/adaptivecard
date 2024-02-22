@@ -19,7 +19,7 @@ class Container(Mixin):
                  style: Literal["default", "emphasis", "good", "attention", "warning", "accent"] = DefaultNone,
                  vertical_content_alignment: Literal["top", "center", "bottom"] = DefaultNone,
                  bleed: bool = DefaultNone,
-                 min_height: str = DefaultNone,
+                 min_height: str | int = DefaultNone,
                  rtl: bool = DefaultNone,
                  height: Literal["auto", "stretch"] = DefaultNone,
                  separator: bool = DefaultNone,
@@ -65,6 +65,11 @@ class Container(Mixin):
                 __value = Liszt(__value)
             elif isinstance(__value, _base_types.Element):
                 __value = Liszt([__value])
+        elif __name == "min_height":
+            try:
+                __value = convert_to_pixel_string(__value)
+            except ValueError:
+                raise_invalid_pixel_error()
         return super().__setattr__(__name, __value)
 
 
@@ -405,12 +410,15 @@ class Table(Mixin):
         return self.rows.__setitem__(__key, __value)
     
     def append(self, row: ListLike):
-        self.rows.append(TableRow(row))
+        if not isinstance(row, ListLike):
+            raise TypeError
+        if not isinstance(row, TableRow): row = TableRow(row)
+        self.rows.append(row)
     
     # custom to_dict para lidar com o formato atípico do atributo columns dentro do json
     def to_dict(self):
         dic = super().to_dict()
-        if self.columns:
+        if hasattr(self, "columns") and self.columns:
             json_columns = [{"width": width} for width in self.columns]
         elif self.rows:
             json_columns = [{"width": 1} for _ in self.rows[0]]

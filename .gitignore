@@ -3,4 +3,10 @@ main.py
 /adaptivecard.egg-info
 /build
 /dist
-/__pycache__
+__pycache__
+tempCodeRunnerFile*
+*.json
+tests.py
+testing.py
+mm.py
+backlog.md
