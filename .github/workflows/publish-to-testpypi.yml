@@ -20,7 +20,7 @@ jobs:
 
   deploy:
 
-    if: startsWith(github.ref, 'refs/tags') && endsWith('-alpha')
+    if: startsWith(github.ref, 'refs/tags') && endsWith(github.ref, '-alpha')
 
     runs-on: ubuntu-latest
 
