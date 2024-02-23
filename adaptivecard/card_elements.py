@@ -1,5 +1,4 @@
-from typing import Any
-from typing_extensions import Literal
+from typing import Any, Literal
 import adaptivecard._base_types as _base_types
 from adaptivecard._typing import DefaultNone
 from adaptivecard._mixin import Mixin
