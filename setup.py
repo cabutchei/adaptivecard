@@ -1,9 +1,13 @@
 from setuptools import setup, find_packages
+import logging
+from pathlib import Path
 
 VERSION = '0.8.8a3'
 DESCRIPTION = 'Microsoft Adaptive Cards'
 LONG_DESCRIPTION = 'A package that helps you design adaptive cards in an object-oriented manner.'
 
+current_location = Path().absolute()
+logging.info(current_location)
 with open("requirements.txt") as f:
     requires = f.read().split()
 
