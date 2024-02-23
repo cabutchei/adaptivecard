@@ -11,13 +11,12 @@ name: Upload Python Package
 on:
   push:
     tags:
-      - '[0-9]+.[0-9]+.[0-9]+\-alpha'
+      '[0-9]+.[0-9]+.[0-9]+\-alpha'
 
 permissions:
   contents: read
 
 jobs:
-
   deploy:
 
     runs-on: ubuntu-latest
@@ -34,8 +33,8 @@ jobs:
         pip install build
     - name: Build package
       run: python -m build
-    - name: Publish package to TestPyPi
+    - name: Publish package to TestPyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        user: __token__
-        password: ${{ secrets.TESTPYPI_API_TOKEN }}
+        password: ${{ secrets.PYPI_API_TOKEN }}
+        repository-url: https://test.pypi.org/legacy/
