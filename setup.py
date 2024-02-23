@@ -1,8 +1,11 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.8.5-alpha'
+VERSION = '0.8.8a'
 DESCRIPTION = 'Microsoft Adaptive Cards'
 LONG_DESCRIPTION = 'A package that helps you design adaptive cards in an object-oriented manner.'
+
+with open("requirements.txt") as f:
+    requires = f.read().split()
 
 setup(
     name="adaptivecard",
@@ -13,9 +16,7 @@ setup(
     long_description_content_type="text/markdown",
     long_description=LONG_DESCRIPTION,
     packages=find_packages(),
-    install_requires=[
-        'tabulate'
-    ],
+    install_requires=requires,
     keywords=['python', 'adaptive', 'cards', 'microsoft'],
     classifiers=[
         "Development Status :: 3 - Alpha",
