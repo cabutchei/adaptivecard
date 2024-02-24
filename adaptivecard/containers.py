@@ -364,7 +364,7 @@ class TableRow(Mixin):
 
 class Table(Mixin):
     __slots__ = ('type', 'columns', 'rows', 'first_row_as_header', 'show_grid_lines', 'grid_style',
-                 'horizontal_cell_content_alignment', 'vertical_content_alignment', 'fallback', 'height',
+                 'horizontal_cell_content_alignment', 'vertical_cell_content_alignment', 'fallback', 'height',
                  'separator', 'spacing', 'id', 'is_visible')
     def __init__(self,
                  rows: ListLike[ListLike[Any]] = DefaultNone,
