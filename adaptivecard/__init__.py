@@ -87,7 +87,7 @@ class AdaptiveCard(Mixin):
             __value = version
         if __name == 'body' and isinstance(__value, _base_types.Element) \
             or __name == 'actions' and isinstance(__value, _base_types.Action):
-            __value = [__value]
+            __value = Liszt([__value])
         return super().__setattr__(__name, __value)
     
 
