@@ -1,7 +1,6 @@
 from setuptools import setup, find_packages
-from pathlib import Path
 
-VERSION = '0.8.8a9'
+VERSION = '0.8.9a0'
 DESCRIPTION = 'Microsoft Adaptive Cards'
 LONG_DESCRIPTION = 'A package that helps you design adaptive cards in an object-oriented manner.'
 
