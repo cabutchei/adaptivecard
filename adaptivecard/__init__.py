@@ -1,7 +1,7 @@
-from typing import Any, Literal
+from typing import Any, Literal, overload
 from adaptivecard._mixin import Mixin
 import adaptivecard._base_types as _base_types
-from adaptivecard._typing import ListLike, DefaultNone, Liszt
+from adaptivecard._typing import ListLike, DefaultNone, ElementList
 
 
 
@@ -47,8 +47,8 @@ class AdaptiveCard(Mixin):
         self.version = version  
         self.schema = "http://adaptivecards.io/schemas/adaptive-card.json"
         if body is DefaultNone:
-            body = Liszt()
-        self.body: list = body
+            body = ElementList()
+        self.body: ElementList = body
         self.actions = actions
         self.fallback_text = fallback_text
         self.background_image = background_image
@@ -78,6 +78,17 @@ class AdaptiveCard(Mixin):
         content = Content(content=self)
         msg = Message(attachments=[content])
         return msg
+
+    @overload
+    def __getitem__(self, __i: int):
+        ...
+
+    @overload
+    def __getitem__(self, __s: slice):
+        ...
+
+    def __getitem__(self, k):
+        return self.body.__getitem__(k)
     
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == 'version':
@@ -87,7 +98,7 @@ class AdaptiveCard(Mixin):
             __value = version
         if __name == 'body' and isinstance(__value, _base_types.Element) \
             or __name == 'actions' and isinstance(__value, _base_types.Action):
-            __value = Liszt([__value])
+            __value = ElementList([__value])
         return super().__setattr__(__name, __value)
     
 

@@ -37,7 +37,7 @@ ListLike = SequenceNotStr
 DefaultNone = object()
 
 
-class Liszt(list):
+class ElementList(list):
     def __init__(self, data=None) -> None:
         if data is None: data = []
         super().__init__(data)
@@ -53,3 +53,14 @@ class Liszt(list):
         if not isinstance(__value, Element):
             raise TypeError
         return super().__setitem__(__key, __value)
+    @overload
+    def __getitem__(self, __i: int):
+        ...
+    @overload
+    def __getitem__(self, __s: slice):
+        ...
+    def __getitem__(self, k):
+        r = super().__getitem__(k)
+        if isinstance(r, list):
+            r = self.__class__(r)
+        return r

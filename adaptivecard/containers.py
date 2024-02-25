@@ -1,16 +1,18 @@
-from typing import Any, Literal
+from typing import Any, Literal, overload
 from sys import maxsize
 import adaptivecard._base_types as _base_types
 from adaptivecard._mixin import Mixin
 from adaptivecard.card_elements import TextBlock
 from adaptivecard._utils import convert_to_pixel_string, raise_invalid_pixel_error
-from adaptivecard._typing import ListLike, DefaultNone, Liszt
+from adaptivecard._typing import ListLike, DefaultNone, ElementList
 from tabulate import tabulate
 
 
 
 class Container(Mixin):
-    """Um contâiner é um agrupamento de elementos"""
+    """A grouping of elements. Containers are useful for grouping a number of related elements
+    into one structure. All elements inside a container will inherit its styling attributes
+    upon rendering of the card."""
     __slots__ = ('type', 'items', 'style', 'vertical_content_alignment', 'bleed', 'min_height',
                  'rtl', 'height', 'separator', 'spacing', 'id', 'is_visible')
     def __init__(self,
@@ -29,8 +31,8 @@ class Container(Mixin):
 
         self.type = "Container"
         if items is DefaultNone:
-            items = Liszt()
-        self.items = items
+            items = ElementList()
+        self.items: ElementList = items
         self.style = style
         self.vertical_content_alignment = vertical_content_alignment
         self.bleed = bleed
@@ -52,6 +54,17 @@ class Container(Mixin):
     def __iter__(self):
         return iter(self.items)
 
+    @overload
+    def __getitem__(self, __i: int):
+        ...
+
+    @overload
+    def __getitem__(self, __s: slice):
+        ...
+
+    def __getitem__(self, k):
+        return self.items.__getitem__(k)
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(items={self.items})"
 
@@ -61,9 +74,9 @@ class Container(Mixin):
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == 'items':
             if isinstance(__value, ListLike):
-                __value = Liszt(__value)
+                __value = ElementList(__value)
             elif isinstance(__value, _base_types.Element):
-                __value = Liszt([__value])
+                __value = ElementList([__value])
         elif __name == "min_height":
             try:
                 __value = convert_to_pixel_string(__value)
@@ -73,7 +86,7 @@ class Container(Mixin):
 
 
 class Column(Mixin):
-    """O contâiner Column define um elemento de coluna, que é parte de um ColumnSet."""
+    """A column container. Columns must be grouped inside a ColumnSet."""
     __slots__ = ('type', 'items', 'background_image', 'bleed', 'fallback', 'min_height',
                  'rtl', 'separator', 'spacing', 'style', 'vertical_content_alignment', 'rtl',
                  'width', 'id', 'is_visible')
@@ -98,8 +111,8 @@ class Column(Mixin):
 
         self.type = "Column"
         if items is DefaultNone:
-            items = Liszt()
-        self.items: list = items
+            items = ElementList()
+        self.items: ElementList = items
         self.background_image = background_image
         self.bleed = bleed
         self.fallback = fallback
@@ -114,8 +127,10 @@ class Column(Mixin):
         self.id = id
         self.is_visible = is_visible
 
-    def append(self, card_element: _base_types.Element):
-        self.items.append(card_element)
+    def append(self, value: _base_types.Element | Any):
+        if not isinstance(value, _base_types.Element):
+            value = TextBlock(value)
+        self.items.append(value)
 
     def __iter__(self):
         return iter(self.items)
@@ -124,21 +139,25 @@ class Column(Mixin):
         return self.items.__getitem__(__i)
     
     def __setitem__(self, __key, __value, /):
-        if not isinstance(__value, _base_types.Element):
-            raise TypeError
         return self.items.__setitem__(__key, __value)
+    
+    def __str__(self):
+        return str([str(item) for item in self.items])
+    
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.items})"
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "items":
             if isinstance(__value, _base_types.Element):
-                __value = Liszt([__value])
+                __value = ElementList([__value])
             elif isinstance(__value, ListLike):
-                __value = Liszt([item 
+                __value = ElementList([item 
                                  if isinstance(item, _base_types.Element) 
                                  else TextBlock(item)
                                  for item in __value])
             else:
-                __value = Liszt([TextBlock(__value)])
+                __value = ElementList([TextBlock(__value)])
         elif __name == "min_height" or __name == "width":
             try:
                 __value = convert_to_pixel_string(__value)
@@ -148,7 +167,7 @@ class Column(Mixin):
 
 
 class ColumnSet(Mixin):
-    """ColumnSet define um grupo de colunas"""
+    """A container for columns."""
     __slots__ = ('type', 'columns', 'style', 'bleed', 'min_height', 'horizontal_alignment', 'height',
                  'separator', 'spacing', 'id', 'is_visible')
     def __init__(self,
@@ -170,8 +189,8 @@ class ColumnSet(Mixin):
 
         self.type = 'ColumnSet'
         if columns is DefaultNone:
-            columns = Liszt()
-        self.columns = columns
+            columns = ElementList()
+        self.columns: ElementList = columns
         self.style = style
         self.bleed = bleed
         self.min_height = min_height
@@ -182,37 +201,55 @@ class ColumnSet(Mixin):
         self.id = id
         self.is_visible = is_visible
 
-    def append(self, column: Column):
+    def append(self, column: Column | ListLike):
+        if not isinstance(column, (Column, ListLike)):
+            raise TypeError(f"Expected Column or list-like object, got {type(column).__name__} instead")
         if not isinstance(column, Column):
-            raise TypeError
+            column = Column(column)
         self.columns.append(column)
 
     def __iter__(self):
         return iter(self.columns)
+
+    @overload
+    def __getitem__(self, __i: int):
+        ...
+
+    @overload
+    def __getitem__(self, __s: slice):
+        ...
+
+    def __getitem__(self, __k, /):
+        return self.columns.__getitem__(__k)
     
-    def __getitem__(self, __i, /):
-        return self.columns.__getitem__(__i)
-    
-    def __setitem__(self, __key, __value, /):
+    def __setitem__(self, __key: int, __value: object, /):
         if not isinstance(__value, Column):
             raise TypeError
         return self.columns.__setitem__(__key, __value)
+    
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.columns})"
+    
+    def __str__(self):
+        return "[" + ", ".join([str(col) for col in self.columns]) + "]"
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "columns":
-            columns = __value
-            if isinstance(columns, ListLike):
-                columns = Liszt([col
-                                 if isinstance(col, Column)
-                                 else Column(col)
-                                 for col in columns])
+            if not isinstance(__value, ListLike):
+                __value = [__value]
+            columns = []
+            for col in __value:
+                if not isinstance(col, _base_types.Element):
+                    col = TextBlock(col)
+                if not isinstance(col, Column):
+                    col = Column(col)
+                columns.append(col)
+            __value = ElementList(columns)
         elif __name == "min_height":
-            min_height = __value
             try:
-                min_height = convert_to_pixel_string(min_height)
+                __value = convert_to_pixel_string(__value)
             except ValueError:
-                raise_invalid_pixel_error(__name, min_height)
-            __value = min_height
+                raise_invalid_pixel_error(__name, __value)
         return super().__setattr__(__name, __value)
 
 
@@ -233,8 +270,8 @@ class TableCell(Mixin):
 
         self.type = "TableCell"
         if items is DefaultNone:
-            items = Liszt()
-        self.items: Liszt = items
+            items = ElementList()
+        self.items: ElementList = items
         self.select_action = select_action
         self.items = items
         self.style = style
@@ -252,8 +289,16 @@ class TableCell(Mixin):
     def squeeze(self):
         ...
 
-    def __getitem__(self, __i, /):
-        return self.items.__getitem__(__i)
+    @overload
+    def __getitem__(self, __i: int):
+        ...
+
+    @overload
+    def __getitem__(self, __s: slice):
+        ...
+
+    def __getitem__(self, __k, /):
+        return self.items.__getitem__(__k)
     
     def __setitem__(self, __key, __value, /):
         if not isinstance(__value, _base_types.Element):
@@ -273,14 +318,14 @@ class TableCell(Mixin):
         if __name == "items":
             items = __value
             if isinstance(items, _base_types.Element):
-                items = Liszt([items])
+                items = ElementList([items])
             elif isinstance(items, ListLike):
-                items = Liszt([item
+                items = ElementList([item
                                if isinstance(item, _base_types.Element)
                                else TextBlock(item)
                                for item in items])
             else:
-                items = Liszt([TextBlock(items)])
+                items = ElementList([TextBlock(items)])
             __value = items
         elif __name == "min_height":
             min_height = __value
@@ -305,7 +350,7 @@ class TableRow(Mixin):
                                 "accent"] = DefaultNone):
         self.type = "TableRow"
         if cells is DefaultNone:
-            cells = Liszt()
+            cells = ElementList()
         self.cells = cells
         self.style = style
     
@@ -313,10 +358,18 @@ class TableRow(Mixin):
         if not isinstance(__object, TableCell): __object = TableCell(__object)
         self.cells.append(__object)
 
-    def __getitem__(self, __i):
-        if isinstance(__i, slice):
-            return self.__class__(cells=self.cells[__i])
-        return self.cells.__getitem__(__i)
+    @overload
+    def __getitem__(self, __i: int):
+        ...
+
+    @overload
+    def __getitem__(self, __s: slice):
+        ...
+
+    def __getitem__(self, __k):
+        if isinstance(__k, slice):
+            return self.__class__(cells=self.cells[__k])
+        return self.cells.__getitem__(__k)
     
     def __setitem__(self, __key, __value):
         if not isinstance(__value, TableCell): __value = TableCell(__value)
@@ -330,7 +383,7 @@ class TableRow(Mixin):
             cells = __value
             if not isinstance(cells, ListLike):
                 raise TypeError
-            cells = Liszt([TableCell(cell) if not isinstance(cell, TableCell) else cell
+            cells = ElementList([TableCell(cell) if not isinstance(cell, TableCell) else cell
                            for cell in cells])
             __value = cells
         return super().__setattr__(__name, __value)
@@ -400,8 +453,16 @@ class Table(Mixin):
         self.id = id
         self.is_visible = is_visible
 
-    def __getitem__(self, __i, /):
-        return self.rows.__getitem__(__i)
+    @overload
+    def __getitem__(self, __i: int):
+        ...
+
+    @overload
+    def __getitem__(self, __s: slice):
+        ...
+
+    def __getitem__(self, __k, /):
+        return self.rows.__getitem__(__k)
     
     def __setitem__(self, __key, __value, /):
         if not isinstance(__value, TableRow):
@@ -476,14 +537,28 @@ class ActionSet(Mixin):
                  ):
         self.type = "ActionSet"
         if actions is DefaultNone:
-            actions = Liszt()
-        self.actions: Liszt = actions
+            actions = ElementList()
+        self.actions: ElementList = actions
         self.fallback = fallback
         self.height = height
         self.separator = separator
         self.spacing = spacing
         self.id = id
         self.is_visible = is_visible
+
+    @overload
+    def __getitem__(self, __i: int):
+        ...
+
+    @overload
+    def __getitem__(self, __s: slice):
+        ...
+
+    def __getitem__(self, __k):
+        r = self.actions.__getitem__(__k)  
+        if isinstance(__k, slice):
+            r = self.__class__(r)
+        return r
 
     def append(self, action: _base_types.Action) -> None:
         if not isinstance(action, _base_types.Action):
@@ -493,9 +568,9 @@ class ActionSet(Mixin):
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "actions":
             if isinstance(__value, _base_types.Action):
-                __value = Liszt([__value])
+                __value = ElementList([__value])
             elif isinstance(__value, ListLike):
-                __value = Liszt(__value)
+                __value = ElementList(__value)
         return super().__setattr__(__name, __value)
         
 
