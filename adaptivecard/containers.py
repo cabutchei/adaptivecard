@@ -4,7 +4,7 @@ import adaptivecard._base_types as _base_types
 from adaptivecard._mixin import Mixin
 from adaptivecard.card_elements import TextBlock
 from adaptivecard._utils import convert_to_pixel_string, raise_invalid_pixel_error
-from adaptivecard._typing import ListLike, DefaultNone, ElementList
+from adaptivecard._typing import ListLike, DefaultNone, ElementList, ColumnList, RowList
 from tabulate import tabulate
 
 
@@ -189,8 +189,8 @@ class ColumnSet(Mixin):
 
         self.type = 'ColumnSet'
         if columns is DefaultNone:
-            columns = ElementList()
-        self.columns: ElementList = columns
+            columns = ColumnList()
+        self.columns: ColumnList = columns
         self.style = style
         self.bleed = bleed
         self.min_height = min_height
@@ -224,7 +224,7 @@ class ColumnSet(Mixin):
     
     def __setitem__(self, __key: int, __value: object, /):
         if not isinstance(__value, Column):
-            raise TypeError
+            raise TypeError()
         return self.columns.__setitem__(__key, __value)
     
     def __repr__(self):
@@ -244,7 +244,7 @@ class ColumnSet(Mixin):
                 if not isinstance(col, Column):
                     col = Column(col)
                 columns.append(col)
-            __value = ElementList(columns)
+            __value = ColumnList(columns)
         elif __name == "min_height":
             try:
                 __value = convert_to_pixel_string(__value)
@@ -320,10 +320,11 @@ class TableCell(Mixin):
             if isinstance(items, _base_types.Element):
                 items = ElementList([items])
             elif isinstance(items, ListLike):
-                items = ElementList([item
-                               if isinstance(item, _base_types.Element)
-                               else TextBlock(item)
-                               for item in items])
+                if not isinstance(items, ElementList):
+                    items = ElementList([item
+                                if isinstance(item, _base_types.Element)
+                                else TextBlock(item)
+                                for item in items])
             else:
                 items = ElementList([TextBlock(items)])
             __value = items
@@ -339,11 +340,6 @@ class TableCell(Mixin):
 
 class TableRow(Mixin):
     __slots__ = ("type", "cells", "style")
-    def __new__(cls, *args, **kwargs):
-        if len(args) == 1 and not kwargs and isinstance(args[0], TableRow):
-            return args[0]
-        else:
-            return super().__new__(cls)
     def __init__(self,
                  cells: ListLike[Any] = DefaultNone,
                  style: Literal["default", "emphasis", "good", "attention", "warning",
@@ -420,7 +416,7 @@ class Table(Mixin):
                  'horizontal_cell_content_alignment', 'vertical_cell_content_alignment', 'fallback', 'height',
                  'separator', 'spacing', 'id', 'is_visible')
     def __init__(self,
-                 rows: ListLike[ListLike[Any]] = DefaultNone,
+                 rows: ListLike[ListLike] = DefaultNone,
                  first_row_as_header: bool = DefaultNone,
                  columns: ListLike[int] = DefaultNone,
                  show_grid_lines: bool = DefaultNone,
@@ -439,7 +435,7 @@ class Table(Mixin):
         self.type = "Table"
         if rows is DefaultNone:
             rows = []
-        self.rows: list = rows
+        self.rows: RowList = rows
         self.columns = columns if columns is not None else []
         self.first_row_as_header = first_row_as_header
         self.show_grid_lines = show_grid_lines
@@ -472,7 +468,8 @@ class Table(Mixin):
     def append(self, row: ListLike):
         if not isinstance(row, ListLike):
             raise TypeError
-        if not isinstance(row, TableRow): row = TableRow(row)
+        if not isinstance(row, TableRow):
+            row = TableRow(row)
         self.rows.append(row)
     
     # custom to_dict para lidar com o formato atípico do atributo columns dentro do json
@@ -489,17 +486,6 @@ class Table(Mixin):
     
     def __len__(self):
         return len(self.rows)
-    
-    def __add__(self, value: ListLike):
-        if not isinstance(value, ListLike):
-            raise TypeError("Can only add a list-like value to a Table")
-        value = list(value)
-        attrs = {getattr(self, attr_name)
-                 if attr_name != "rows"
-                 else getattr(self, attr_name) + value
-                 for attr_name in self.__slots__
-                 if hasattr(self, attr_name)}
-        return self.__class__(**attrs)
     
     def __str__(self):
         rows = [["\n".join([str(item) for item in cell.items]) for cell in row.cells] for row in self.rows]
@@ -518,7 +504,7 @@ class Table(Mixin):
             if not isinstance(rows, ListLike) or \
             not all([isinstance(item, ListLike) for item in rows]):
                 raise TypeError("argument 'rows' must be a collection of collections")
-            rows = [TableRow(row) for row in rows]
+            rows = RowList([TableRow(row) for row in rows])
             __value = rows
         return super().__setattr__(__name, __value)
 

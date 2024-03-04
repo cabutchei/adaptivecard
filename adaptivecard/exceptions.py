@@ -7,11 +7,11 @@ class TypeCheckError(TypeError):
         super().__init__(message)
 
 class WrongLiteral(ValueCheckError):
-    def __init__(self, arg_name: str = None, allowed_values: list | tuple = None):
+    def __init__(self, arg_name: str = None, arg_value=None, allowed_values: list | tuple = None):
         if arg_name is None or allowed_values is None:
             super().__init__()
         else:
-            msg = f"Argument '{arg_name}' must match one of the following values: {', '.join(allowed_values)}"
+            msg = f"Argument '{arg_name}' ({arg_value}) must match one of the following values: {', '.join(allowed_values)}"
             super().__init__(msg)
 
 class WrongType(TypeCheckError):
@@ -22,7 +22,7 @@ class WrongType(TypeCheckError):
         if arg_name is None or arg_value is None:
             super().__init__()
         else:
-            msg = f"Expected argument '{arg_name}' to be an instance of {expected_type.__name__}, got {type(arg_value).__name__} instead"
+            msg = f"Expected argument '{arg_name}' ({arg_value}) to be an instance of {expected_type.__name__}, got {type(arg_value).__name__} instead"
             super().__init__(msg)
 
 class WrongTypes(TypeCheckError):
@@ -33,7 +33,7 @@ class WrongTypes(TypeCheckError):
         if arg_name is None or arg_value is None:
             super().__init__()
         else:
-            msg = f"Argument '{arg_name}' of type {type(arg_value).__name__} does not match any of the allowed types"
+            msg = f"Argument '{arg_name}' ({arg_value}) of type {type(arg_value).__name__} does not match any of the allowed types"
             super().__init__(msg)
 
 class WrongItem(TypeCheckError):
@@ -55,6 +55,6 @@ class NotListLike(TypeCheckError):
         if arg_name is None or arg_value is None:
             super().__init__()
         else:
-            msg = f"Argument '{arg_name}' must be a collection of some kind, got {type(arg_value).__name__} instead"
+            msg = f"Argument '{arg_name}' ({arg_value}) must be a collection of some kind, got {type(arg_value).__name__} instead"
             super().__init__(msg)
 

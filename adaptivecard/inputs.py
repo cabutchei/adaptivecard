@@ -1,6 +1,6 @@
 from typing import Any, Literal
 import adaptivecard._base_types as _base_types
-from adaptivecard._typing import ListLike, DefaultNone
+from adaptivecard._typing import ListLike, DefaultNone, ChoiceList
 from adaptivecard._mixin import Mixin
 
 
@@ -170,7 +170,8 @@ class DataQuery(Mixin):
 
 
 class Toggle(Mixin):
-    __slots__ = ()
+    __slots__ = ('type', 'title', 'id', 'value', 'value_off', 'value_on', 'wrap', 'error_message',
+                 'is_required', 'label', 'fallback', 'height', 'separator', 'spacing', 'is_visible')
     def __init__(self,
                  title: str,
                  id: str,
@@ -241,7 +242,7 @@ class ChoiceSet(Mixin):
 
         self.type = "Input.ChoiceSet"
         self.id = id
-        self.choices = choices
+        self.choices: ChoiceList = choices
         self.choices_data = choices_data
         self.is_multiselect = is_multiselect
         self.style = style
@@ -269,11 +270,10 @@ class ChoiceSet(Mixin):
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "choices":
-            choices = __value
-            if isinstance(choices, Choice):
-                choices = [choices]
-            elif isinstance(choices, ListLike) and not isinstance(choices, list):
-                choices = list(choices)
+            if isinstance(__value, Choice):
+                __value = ChoiceList([__value])
+            elif isinstance(__value, ListLike) and not isinstance(__value, ChoiceList):
+                __value = ChoiceList(__value)
             
         return super().__setattr__(__name, __value)
     

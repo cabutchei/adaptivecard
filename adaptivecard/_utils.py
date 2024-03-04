@@ -43,7 +43,7 @@ def is_parameterized_type(tp):
 
 def check_type(arg_name: str | None, arg_value: Any, expected_type):
     """
-    Type-checking function, raises TypeError if arg_value doesn't match the eexpected type.
+    Type-checking function, raises TypeError if arg_value doesn't match the expected type.
     """
     if expected_type is Any:
         return
@@ -53,7 +53,7 @@ def check_type(arg_name: str | None, arg_value: Any, expected_type):
 
     if get_origin(expected_type) is Literal:
         if arg_value not in (allowed_values := get_args(expected_type)):
-            raise WrongLiteral(arg_name, allowed_values)
+            raise WrongLiteral(arg_name, arg_value, allowed_values)
         return
 
     elif isinstance(expected_type, tuple):
