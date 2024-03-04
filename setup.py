@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.9.0a0'
+VERSION = '0.2.0'
 DESCRIPTION = 'Microsoft Adaptive Cards'
 LONG_DESCRIPTION = 'A package that helps you design adaptive cards in an object-oriented manner.'
 
