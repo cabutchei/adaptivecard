@@ -1,7 +1,7 @@
 from adaptivecard import AdaptiveCard
 from adaptivecard.containers import Container, ColumnSet, Column, Table, TableRow
 from adaptivecard.card_elements import TextBlock, Image
-
+from adaptivecard.inputs import Text, Time, ChoiceSet, Choice
 
 class Test:
     def test_message(self):
@@ -24,6 +24,14 @@ class Test:
         img = Image("https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg?crop=1xw:0.74975xh;center,top&resize=1200:*",
                     size='medium', style='person', separator=True, height=70)
         card.append(img)
+        text_input = Text(id="text input id")
+        time_input = Time(id="time id")
+        card.append(text_input)
+        card.append(time_input)
+        choice_set = ChoiceSet(id="choice set id")
+        choice = Choice(title="some title", value="value1")
+        choice_set.append(choice)
+        card.append(choice_set)
         msg = card.to_message()
         json = msg.to_dict()
         assert isinstance(json, dict)
