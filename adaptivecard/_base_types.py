@@ -94,6 +94,10 @@ class Time(ABC):
     pass
 
 
+class DataQuery(ABC):
+    pass
+
+
 class Toggle(ABC):
     pass
 
@@ -119,6 +123,14 @@ Element.register(Message)
 Element.register(Content)
 Element.register(Action)
 Element.register(ActionSet)
+Element.register(Text)
+Element.register(Number)
+Element.register(Date)
+Element.register(Time)
+Element.register(DataQuery)
+Element.register(Toggle)
+Element.register(Choice)
+Element.register(ChoiceSet)
 Action.register(ShowCard)
 Action.register(Execute)
 Action.register(OpenUrl)

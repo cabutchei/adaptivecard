@@ -242,6 +242,8 @@ class ChoiceSet(Mixin):
 
         self.type = "Input.ChoiceSet"
         self.id = id
+        if choices is DefaultNone:
+            choices = ChoiceList()
         self.choices: ChoiceList = choices
         self.choices_data = choices_data
         self.is_multiselect = is_multiselect
@@ -257,15 +259,17 @@ class ChoiceSet(Mixin):
         self.separator = separator
         self.spacing = spacing
         self.is_visible = is_visible
+    
+    def append(self, choice: Choice):
+        self.choices.append(choice)
 
     def to_dict(self):
-        dic = {}
-        for attr_name in self.__slots__:
-            if hasattr(self, attr_name):
-                attr_value = getattr(self, attr_name)
-                if attr_value == "choices_data":
-                    attr_value = attr_value.replace('_', '.')
-                dic[attr_name] = attr_value
+        dic = super().to_dict()
+        dic = {
+            key: value if key != "choices_data"
+            else "choices.data"
+            for key, value in dic.items()
+        }
         return dic
 
     def __setattr__(self, __name: str, __value: Any) -> None:
@@ -282,6 +286,7 @@ _base_types.Text.register(Text)
 _base_types.Number.register(Number)
 _base_types.Date.register(Date)
 _base_types.Time.register(Time)
+_base_types.DataQuery.register(DataQuery)
 _base_types.Toggle.register(Toggle)
 _base_types.Choice.register(Choice)
 _base_types.ChoiceSet.register(ChoiceSet)
