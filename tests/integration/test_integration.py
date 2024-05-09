@@ -2,6 +2,7 @@ from adaptivecard import AdaptiveCard
 from adaptivecard.containers import Container, ColumnSet, Column, Table, TableRow
 from adaptivecard.card_elements import TextBlock, Image
 from adaptivecard.inputs import Text, Time, ChoiceSet, Choice
+from adaptivecard.types import Backgroundimage
 
 class Test:
     def test_message(self):
@@ -9,6 +10,12 @@ class Test:
         container = Container(style='warning', bleed=True, min_height=10)
         columns = [Column([1,1,1]), Column([2,2,2])]
         column_set = ColumnSet((columns), style='warning', min_height=8, height='auto')
+        bg_image = Backgroundimage(
+            url="https://images.ctfassets.net/sfnkq8lmu5d7/4Ma58uke8SXDQLWYefWiIt/3f1945422ea07ea6520c7aae39180101/2021-11-24_Singleton_Puppy_Syndrome_One_Puppy_Litter.jpg?w=1000&h=750&fl=progressive&q=70&fm=jpg",
+            fill_mode="cover",
+            horizontal_alignment="center"
+        )
+        column_set[0].background_image = bg_image
         container.append(column_set)
         card.append(container)
         container_2 = Container()
