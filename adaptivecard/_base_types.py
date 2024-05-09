@@ -110,6 +110,10 @@ class ChoiceSet(ABC):
     pass
 
 
+class BackgroundImage(ABC):
+    pass
+
+
 Element.register(AdaptiveCard)
 Element.register(Table)
 Element.register(TableRow)
@@ -136,3 +140,4 @@ Action.register(Execute)
 Action.register(OpenUrl)
 Action.register(Submit)
 Action.register(ToggleVisibility)
+

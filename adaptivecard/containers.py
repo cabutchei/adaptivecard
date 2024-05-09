@@ -92,7 +92,7 @@ class Column(Mixin):
                  'width', 'id', 'is_visible')
     def __init__(self,
                  items: _base_types.Element | ListLike[_base_types.Element | Any] | Any = DefaultNone,
-                 background_image = DefaultNone,
+                 background_image: str | _base_types.BackgroundImage = DefaultNone,
                  bleed: bool = DefaultNone,
                  fallback: "Column" = DefaultNone,
                  min_height: str | int = DefaultNone,
@@ -264,7 +264,7 @@ class TableCell(Mixin):
                                 "accent"] = DefaultNone,
                  vertical_alignment: Literal["top", "center", "bottom"] = DefaultNone,
                  bleed: bool = DefaultNone,
-                 background_image: str = DefaultNone,
+                 background_image: str | _base_types.BackgroundImage = DefaultNone,
                  min_height: str | int = DefaultNone,
                  rtl: bool = DefaultNone):
 

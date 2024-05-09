@@ -36,7 +36,7 @@ class AdaptiveCard(Mixin):
                  body: _base_types.Element | ListLike[_base_types.Element] = DefaultNone,
                  actions: _base_types.Action | ListLike[_base_types.Action] = DefaultNone,
                  fallback_text: str = DefaultNone,
-                 background_image: str = DefaultNone,
+                 background_image: str | _base_types.BackgroundImage = DefaultNone,
                  min_height: str = DefaultNone,
                  rtl: bool = DefaultNone,
                  speak: str = DefaultNone,
