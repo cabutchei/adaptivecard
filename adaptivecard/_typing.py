@@ -34,24 +34,35 @@ class SequenceNotStr(Protocol[_T_co]):
 
 ListLike = SequenceNotStr
 
-DefaultNone = object()
+class DefaultNoneMeta(type):
+    def __init__(self, name, bases, dict) -> None:
+        super().__init__(name, bases, dict)
+    def __repr__(self) -> str:
+        return self.__name__
+
+class DefaultNone(metaclass=DefaultNoneMeta):
+    pass
 
 
-class ElementList(list):
-    def __init__(self, data=None) -> None:
-        if data is None: data = []
+def _check_type(value, types: tuple[type, ...]):
+    if not isinstance(value, types):
+        raise TypeError(f"{value} is not an instance of either of {tuple([tp.__name__ for tp in types])}")
+
+
+class TypedList(list):
+    def __init__(self, data):
+        if hasattr(data, "__iter__"):
+            for value in data:
+                _check_type(value, self._types)
         super().__init__(data)
     def append(self, __object) -> None:
-        if not isinstance(__object, Element):
-            raise TypeError(f"{type(self).__name__} only accepts items of type {Element.__name__}")
+        _check_type(__object, self._types)
         return super().append(__object)
     def insert(self, __index: SupportsIndex, __object: Any) -> None:
-        if not isinstance(__object, Element):
-            raise TypeError(f"{type(self).__name__} only accepts items of type {Element.__name__}")
+        _check_type(__object, self._types)
         return super().insert(__index, __object)
     def __setitem__(self, __key, __value, /):
-        if not isinstance(__value, Element):
-            raise TypeError(f"{type(self).__name__} only accepts items of type {Element.__name__}")
+        _check_type(__value, self._types)
         return super().__setitem__(__key, __value)
     @overload
     def __getitem__(self, __i: int):
@@ -66,88 +77,12 @@ class ElementList(list):
         return r
 
 
-class ColumnList(list):
-    def __init__(self, data=None) -> None:
-        if data is None: data = []
-        super().__init__(data)
-    def append(self, __object) -> None:
-        if not isinstance(__object, Column):
-            raise TypeError(f"{type(self).__name__} only accepts items of type {Column.__name__}")
-        return super().append(__object)
-    def insert(self, __index: SupportsIndex, __object: Any) -> None:
-        if not isinstance(__object, Column):
-            raise TypeError(f"{type(self).__name__} only accepts items of type {Column.__name__}")
-        return super().insert(__index, __object)
-    def __setitem__(self, __key, __value, /):
-        if not isinstance(__value, Column):
-            raise TypeError(f"{type(self).__name__} only accepts items of type {Column.__name__}")
-        return super().__setitem__(__key, __value)
-    @overload
-    def __getitem__(self, __i: int):
-        ...
-    @overload
-    def __getitem__(self, __s: slice):
-        ...
-    def __getitem__(self, k):
-        r = super().__getitem__(k)
-        if isinstance(r, list):
-            r = self.__class__(r)
-        return r
+def create_typed_list(name: str, types: tuple[type, ...]):
+    """Returns a custom TypedList class which will raise for all types not defined in `types`"""
+    return type(name, (TypedList,), {"_types": types})
 
 
-class RowList(list):
-    def __init__(self, data=None) -> None:
-        if data is None: data = []
-        super().__init__(data)
-    def append(self, __object) -> None:
-        if not isinstance(__object, TableRow):
-            raise TypeError(f"{type(self).__name__} only accepts items of type {TableRow.__name__}")
-        return super().append(__object)
-    def insert(self, __index: SupportsIndex, __object: Any) -> None:
-        if not isinstance(__object, TableRow):
-            raise TypeError(f"{type(self).__name__} only accepts items of type {TableRow.__name__}")
-        return super().insert(__index, __object)
-    def __setitem__(self, __key, __value, /):
-        if not isinstance(__value, TableRow):
-            raise TypeError(f"{type(self).__name__} only accepts items of type {TableRow.__name__}")
-        return super().__setitem__(__key, __value)
-    @overload
-    def __getitem__(self, __i: int):
-        ...
-    @overload
-    def __getitem__(self, __s: slice):
-        ...
-    def __getitem__(self, k):
-        r = super().__getitem__(k)
-        if isinstance(r, list):
-            r = self.__class__(r)
-        return r
-
-
-class ChoiceList(list):
-    def __init__(self, data=None) -> None:
-        if data is None: data = []
-        super().__init__(data)
-    def append(self, __object) -> None:
-        if not isinstance(__object, Choice):
-            raise TypeError(f"{type(self).__name__} only accepts items of type {Choice.__name__}")
-        return super().append(__object)
-    def insert(self, __index: SupportsIndex, __object: Any) -> None:
-        if not isinstance(__object, Choice):
-            raise TypeError(f"{type(self).__name__} only accepts items of type {Choice.__name__}")
-        return super().insert(__index, __object)
-    def __setitem__(self, __key, __value, /):
-        if not isinstance(__value, Choice):
-            raise TypeError(f"{type(self).__name__} only accepts items of type {Choice.__name__}")
-        return super().__setitem__(__key, __value)
-    @overload
-    def __getitem__(self, __i: int):
-        ...
-    @overload
-    def __getitem__(self, __s: slice):
-        ...
-    def __getitem__(self, k):
-        r = super().__getitem__(k)
-        if isinstance(r, list):
-            r = self.__class__(r)
-        return r
+ElementList = create_typed_list("ElementList", (Element,))
+ColumnsList = create_typed_list("ColumnsList", (Column,))
+RowList = create_typed_list("RowList", (TableRow,))
+ChoiceList = create_typed_list("ChoiceList", (Choice))

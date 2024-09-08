@@ -8,9 +8,10 @@ from adaptivecard._utils import convert_to_pixel_string, raise_invalid_pixel_err
 
 class TextBlock(Mixin):
     """Elemento de texto"""
-    __slots__ = ('type', 'text', 'color', 'font_type', 'horizontal_alignment', 'is_subtle',
+    __slots__ = ('text', 'color', 'font_type', 'horizontal_alignment', 'is_subtle',
                  'max_lines', 'size', 'weight', 'wrap', 'style', 'fallback',
                  'height', 'separator', 'spacing', 'id', 'is_visible')
+    type = "TextBlock"
     def __init__(self,
                  text: Any,
                  color: Literal["default", "dark", "light", "accent", "good", "warning", "attention"] = DefaultNone,
@@ -29,7 +30,6 @@ class TextBlock(Mixin):
                  id: str = DefaultNone,
                  is_visible: bool = DefaultNone):
 
-        self.type = "TextBlock"
         self.text = text
         self.color = color
         self.font_type = font_type
@@ -54,7 +54,7 @@ class TextBlock(Mixin):
         return self.text
 
     def __setattr__(self, __name: str, __value: Any) -> None:
-        if __name == 'text' and isinstance(__name, str):
+        if __name == 'text':
             __value = str(__value)
         return super().__setattr__(__name, __value)
 

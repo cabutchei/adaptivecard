@@ -1,7 +1,10 @@
-from typing import Any, get_type_hints
+from typing import Any
 from adaptivecard._typing import DefaultNone
 from adaptivecard._base_types import Element
-from adaptivecard._utils import check_type, snake_to_camel
+from adaptivecard._utils import snake_to_camel, get_schema_path
+from adaptivecard._type_checker import check_types, check_type, get_validation_schema_for_property
+from adaptivecard.schemas.schema import schema
+
 
 
 class Mixin:
@@ -21,9 +24,10 @@ class Mixin:
         return dic
 
     def __setattr__(self, __name: str, __value: Any) -> None:
-        # do not create attributes that are set to DefaultNone, i.e., the user did not input any value
+        # do not create attributes that are set to DefaultNone, i.e., if the user did not input any value
         if __value is DefaultNone:
             return
-        type_hints = get_type_hints(self.__init__)
-        check_type(__name, __value, type_hints.get(__name, Any))
+        validation_schema = get_validation_schema_for_property(schema, self.type, __name)
+        if validation_schema is not None:
+            check_type(validation_schema, __name, __value)
         super().__setattr__(__name, __value)

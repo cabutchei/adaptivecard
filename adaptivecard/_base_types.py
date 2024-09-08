@@ -10,7 +10,7 @@ class AdaptiveCard(ABC):
     pass
 
 
-class ActionSet(ABC):
+class ActionSet(Element):
     pass
 
 
@@ -18,31 +18,34 @@ class Action(ABC):
     pass
 
 
-class ShowCard(ABC):
+class ShowCard(Action):
     pass
 
 
-class Execute(ABC):
+class Execute(Action):
     pass
 
 
-class OpenUrl(ABC):
+class OpenUrl(Action):
     pass
 
 
-class Submit(ABC):
+class Submit(Action):
     pass
 
 
-class ToggleVisibility(ABC):
+class ToggleVisibility(Action):
+    pass
+
+class Table(ABC):
     pass
 
 
-class TableRow(ABC):
+class TableRow(Table):
     pass
 
 
-class TableCell(ABC):
+class TableCell(Table):
     pass
 
 
@@ -54,11 +57,11 @@ class Message(ABC):
     pass
 
 
-class Container(ABC):
+class Container(Element):
     pass
 
 
-class ColumnSet(ABC):
+class ColumnSet(Element):
     pass
 
 
@@ -66,31 +69,27 @@ class Column(ABC):
     pass
 
 
-class Table(ABC):
+class TextBlock(Element):
     pass
 
 
-class TextBlock(ABC):
+class Image(Element):
     pass
 
 
-class Image(ABC):
+class Text(Element):
     pass
 
 
-class Text(ABC):
+class Number(Element):
     pass
 
 
-class Number(ABC):
+class Date(Element):
     pass
 
 
-class Date(ABC):
-    pass
-
-
-class Time(ABC):
+class Time(Element):
     pass
 
 
@@ -98,7 +97,7 @@ class DataQuery(ABC):
     pass
 
 
-class Toggle(ABC):
+class Toggle(Element):
     pass
 
 
@@ -106,7 +105,7 @@ class Choice(ABC):
     pass
 
 
-class ChoiceSet(ABC):
+class ChoiceSet(Element):
     pass
 
 
