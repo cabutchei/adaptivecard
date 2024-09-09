@@ -1,5 +1,5 @@
 from typing import Protocol, Sequence, Iterator, Iterable, TypeVar, Any, SupportsIndex, overload, runtime_checkable
-from adaptivecard._base_types import Element, Choice, TableRow, Column
+from adaptivecard._base_types import Element, Choice, TableRow, Column, TableCell
 
 
 _T_co = TypeVar("_T_co", covariant=True)
@@ -46,11 +46,14 @@ class DefaultNone(metaclass=DefaultNoneMeta):
 
 def _check_type(value, types: tuple[type, ...]):
     if not isinstance(value, types):
-        raise TypeError(f"{value} is not an instance of either of {tuple([tp.__name__ for tp in types])}")
+        msg = f"{value} is not an instance of either of {[tp.__name__ for tp in types]}"
+        raise TypeError(msg)
 
 
 class TypedList(list):
-    def __init__(self, data):
+    def __init__(self, data = None):
+        if data is None:
+            data = []
         if hasattr(data, "__iter__"):
             for value in data:
                 _check_type(value, self._types)
@@ -83,6 +86,7 @@ def create_typed_list(name: str, types: tuple[type, ...]):
 
 
 ElementList = create_typed_list("ElementList", (Element,))
-ColumnsList = create_typed_list("ColumnsList", (Column,))
+ColumnList = create_typed_list("ColumnList", (Column,))
 RowList = create_typed_list("RowList", (TableRow,))
-ChoiceList = create_typed_list("ChoiceList", (Choice))
+ChoiceList = create_typed_list("ChoiceList", (Choice,))
+CellList = create_typed_list("CellList", (TableCell,))

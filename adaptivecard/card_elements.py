@@ -48,7 +48,7 @@ class TextBlock(Mixin):
         self.is_visible = is_visible
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(text='{self.text}')"
+        return f"{self.__class__.__name__}('{self.text}')"
 
     def __str__(self):
         return self.text
@@ -60,9 +60,10 @@ class TextBlock(Mixin):
 
 
 class Image(Mixin):
-    __slots__ = ("type", "url", "alt_text", "background_color", "height", "horizontal_alignment",
+    __slots__ = ("url", "alt_text", "background_color", "height", "horizontal_alignment",
                  "select_action", "size", "style", "width", "fallback", "separator", "spacing",
                  "id", "is_visible")
+    type = "Image"
     def __init__(self,
                  url: str,
                  alt_text: str = DefaultNone,
@@ -82,7 +83,6 @@ class Image(Mixin):
                  is_visible: bool = DefaultNone
                 ):
 
-        self.type = "Image"
         self.url = url
         self.alt_text = alt_text
         self.background_color = background_color

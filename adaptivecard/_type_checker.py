@@ -54,7 +54,6 @@ def get_deepest_error(errors):
     for error in errors:
         error_tree = ErrorTree([error])
         if error_tree._contents:
-            ErrorTree([error])
             offending_element = next(iter(error_tree))
             errors = error_tree[offending_element].errors
             child_error = next(iter(errors.values()))

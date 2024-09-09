@@ -12,6 +12,7 @@ class Mixin:
 
     def to_dict(self):
         dic = {}
+        dic["type"] = self.type
         for attr_name, attr_value in {attr_name: getattr(self, attr_name) for attr_name in self.__slots__ if hasattr(self, attr_name)}.items():
             camel_formated_attr_name = snake_to_camel(attr_name)
             if isinstance(attr_value, Element):
@@ -24,6 +25,8 @@ class Mixin:
         return dic
 
     def __setattr__(self, __name: str, __value: Any) -> None:
+        if __name == "type":
+            raise AttributeError("cannot set 'type' attribute")
         # do not create attributes that are set to DefaultNone, i.e., if the user did not input any value
         if __value is DefaultNone:
             return

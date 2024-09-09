@@ -1,10 +1,10 @@
-from typing import Any, Literal, overload
+from typing import Any, Literal, overload, Iterable
 from sys import maxsize
 import adaptivecard._base_types as _base_types
 from adaptivecard._mixin import Mixin
 from adaptivecard.card_elements import TextBlock
 from adaptivecard._utils import convert_to_pixel_string, raise_invalid_pixel_error
-from adaptivecard._typing import ListLike, DefaultNone, ElementList, ColumnList, RowList
+from adaptivecard._typing import ListLike, DefaultNone, ElementList, ColumnList, RowList, CellList
 from tabulate import tabulate
 
 
@@ -49,9 +49,13 @@ class Container(Mixin):
         return len(self.items) == 0
 
     def append(self, element: _base_types.Element):
-        if isinstance(element, str):
+        if not isinstance(element, _base_types.Element):
             element = TextBlock(element)
         self.items.append(element)
+
+    def append_many(self, elements: Iterable[_base_types.Element]):
+        for element in elements:
+            self.append(element)
 
     def __iter__(self):
         return self.items.__iter__()
@@ -73,7 +77,6 @@ class Container(Mixin):
         return self.items.__setitem__(__key, __value)
 
     def __repr__(self) -> str:
-        # return f"{self.__class__.__name__}(items={self.items})"
         return f"{self.__class__.__name__}({self.items})"
 
     def __str__(self) -> str:
@@ -137,10 +140,14 @@ class Column(Mixin):
         self.id = id
         self.is_visible = is_visible
 
-    def append(self, value: _base_types.Element | Any):
-        if not isinstance(value, _base_types.Element):
-            value = TextBlock(value)
-        self.items.append(value)
+    def append(self, element: _base_types.Element):
+        if not isinstance(element, _base_types.Element):
+            element = TextBlock(element)
+        self.items.append(element)
+
+    def append_many(self, elements: Iterable[_base_types.Element]):
+        for element in elements:
+            self.append(element)
 
     def __iter__(self):
         return self.items.__iter__()
@@ -158,20 +165,27 @@ class Column(Mixin):
         return f"{self.__class__.__name__}({self.items})"
 
     def __setattr__(self, __name: str, __value: Any) -> None:
+        if __value is DefaultNone:
+            return
         if __name == "items":
-            if isinstance(__value, _base_types.Element):
-                __value = ElementList([__value])
-            elif isinstance(__value, ListLike):
-                __value = ElementList([item 
-                                 if isinstance(item, _base_types.Element) 
-                                 else TextBlock(item)
-                                 for item in __value])
+            items = ElementList()
+            if isinstance(__value, ListLike):
+                for item in __value:
+                    if not isinstance(item, _base_types.Element):
+                        item = TextBlock(item)
+                    items.append(item)
+
+            elif not isinstance(__value, _base_types.Element):
+                items.append(TextBlock(__value))
+
             else:
-                __value = ElementList([TextBlock(__value)])
+                items.append(__value)
+            __value = items
+
         elif __name in ("min_height", "width"):
             try:
                 __value = convert_to_pixel_string(__value)
-            except ValueError:
+            except (TypeError, ValueError):
                 raise_invalid_pixel_error(__name, __value)
         return super().__setattr__(__name, __value)
 
@@ -212,14 +226,14 @@ class ColumnSet(Mixin):
         self.is_visible = is_visible
 
     def append(self, column: Column | ListLike):
-        if not isinstance(column, (Column, ListLike)):
-            raise TypeError(f"Expected Column or list-like object, got {type(column).__name__} instead")
-        if not isinstance(column, Column):
+        if isinstance(column, ListLike):
             column = Column(column)
+        if not isinstance(column, Column, ListLike):
+            raise TypeError(f"Expected Column or list-like object, got {type(column).__name__} instead")
         self.columns.append(column)
 
     def __iter__(self):
-        return iter(self.columns)
+        return self.columns.__iter__()
 
     @overload
     def __getitem__(self, __i: int):
@@ -243,22 +257,22 @@ class ColumnSet(Mixin):
     def __str__(self):
         return "[" + ", ".join([str(col) for col in self.columns]) + "]"
 
-    def __setattr__(self, __name: str, __value: Any) -> None:
+    def __setattr__(self, __name: str, __value) -> None:
+        if __value is DefaultNone:
+            return
         if __name == "columns":
             if not isinstance(__value, ListLike):
-                __value = [__value]
-            columns = []
-            for col in __value:
-                if not isinstance(col, _base_types.Element):
-                    col = TextBlock(col)
-                if not isinstance(col, Column):
-                    col = Column(col)
-                columns.append(col)
-            __value = ColumnList(columns)
+                raise TypeError(f"expected a list-like value")
+            columns = ColumnList()
+            for item in __value:
+                if not isinstance(item, Column):
+                    item = Column(item)
+                columns.append(item)
+            __value = columns
         elif __name == "min_height":
             try:
                 __value = convert_to_pixel_string(__value)
-            except ValueError:
+            except (TypeError, ValueError):
                 raise_invalid_pixel_error(__name, __value)
         return super().__setattr__(__name, __value)
 
@@ -312,37 +326,34 @@ class TableCell(Mixin):
     
     def __setitem__(self, __key, __value, /):
         if not isinstance(__value, _base_types.Element):
-            raise TypeError
+            __value = TextBlock(__value)
         return self.items.__setitem__(__key, __value)
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(items={[item for item in self.items]})"
+        return f"{self.__class__.__name__}({self.items})"
 
     def __str__(self) -> str:
         return "[" + ", ".join([str(item) for item in self.items]) + "]"
 
     def __iter__(self):
-        return iter(self.items)
+        return self.items.__iter__()
     
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "items":
-            items = __value
-            if isinstance(items, _base_types.Element):
-                items = ElementList([items])
-            elif isinstance(items, ListLike):
-                if not isinstance(items, ElementList):
-                    items = ElementList([item
-                                if isinstance(item, _base_types.Element)
-                                else TextBlock(item)
-                                for item in items])
-            else:
-                items = ElementList([TextBlock(items)])
-            __value = items
+            items = ElementList()
+            if isinstance(items, ListLike):
+                for item in __value:
+                    if not isinstance(item, _base_types.Element):
+                        item = TextBlock(item)
+                    items.append(item)
+                __value = items
+            if not isinstance(items, _base_types.Element):
+                __value = TextBlock(items)
         elif __name == "min_height":
             min_height = __value
             try:
                 min_height = convert_to_pixel_string(min_height)
-            except ValueError:
+            except (TypeError, ValueError):
                 raise_invalid_pixel_error(__name, min_height)
             __value = min_height
         return super().__setattr__(__name, __value)
@@ -386,11 +397,13 @@ class TableRow(Mixin):
     
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "cells":
-            cells = __value
-            if not isinstance(cells, ListLike):
-                raise TypeError
-            cells = ElementList([TableCell(cell) if not isinstance(cell, TableCell) else cell
-                           for cell in cells])
+            if not isinstance(__value, ListLike):
+                raise TypeError("expected a list-like value")
+            cells = CellList()
+            for cell in __value:
+                if not isinstance(cell, TableCell):
+                    cell = TableCell(cell)
+                cells.append(cell)
             __value = cells
         return super().__setattr__(__name, __value)
 
@@ -422,7 +435,7 @@ class TableRow(Mixin):
 
 
 class Table(Mixin):
-    __slots__ = ('type', 'columns', 'rows', 'first_row_as_header', 'show_grid_lines', 'grid_style',
+    __slots__ = ('columns', 'rows', 'first_row_as_header', 'show_grid_lines', 'grid_style',
                  'horizontal_cell_content_alignment', 'vertical_cell_content_alignment', 'fallback', 'height',
                  'separator', 'spacing', 'id', 'is_visible')
     type = "Table"
@@ -444,7 +457,7 @@ class Table(Mixin):
                  is_visible: bool = DefaultNone):
 
         if rows is DefaultNone:
-            rows = []
+            rows = RowList()
         self.rows: RowList = rows
         self.columns = columns if columns is not None else []
         self.first_row_as_header = first_row_as_header
@@ -510,11 +523,14 @@ class Table(Mixin):
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "rows":
-            rows = __value
-            if not isinstance(rows, ListLike) or \
-            not all([isinstance(item, ListLike) for item in rows]):
+            rows = RowList()
+            if not (isinstance(rows, ListLike) or \
+            not all([isinstance(item, ListLike) for item in rows])):
                 raise TypeError("argument 'rows' must be a collection of collections")
-            rows = RowList([TableRow(row) for row in rows])
+            for row in __value:
+                if not isinstance(row, TableRow):
+                    row = TableRow(row)
+                rows.append(row)
             __value = rows
         return super().__setattr__(__name, __value)
 

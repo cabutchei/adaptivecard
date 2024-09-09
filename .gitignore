@@ -4,9 +4,11 @@ main.py
 /dist
 __pycache__
 tempCodeRunnerFile*
-*.json
+!adaptivecard/schemas
 tests.py
 testing.py
 mm.py
 backlog.md
 /json_exploring
+launch.json
+ideas.py

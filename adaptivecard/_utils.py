@@ -1,18 +1,23 @@
 from json import dump
 
 
-def raise_invalid_pixel_error(arg_name: str, arg_value: str):
-    msg = f"argument '{arg_name}' must be numeric or a number ending with 'px', got '{arg_value}' instead"
-    raise ValueError(msg)
+def raise_invalid_pixel_error(arg_name: str, arg_value):
+    msg = f"argument '{arg_name}' must be an int or a numeric string ending with 'px', got '{arg_value}' instead"
+    if isinstance(arg_value, str):
+        raise ValueError(msg)
+    else:
+        raise TypeError(msg)
 
 
 def convert_to_pixel_string(s):
     if isinstance(s, str):
         if not s.replace('px', '').isdecimal():
-            raise ValueError
+            raise ValueError("invalid pixel string")
         s = s.replace('px', '') + 'px'
     elif isinstance(s, int):
         s = str(s) + 'px'
+    else:
+        raise TypeError("invalid type")
     return s
 
 
@@ -22,6 +27,7 @@ def camel_to_snake(s: str):
         if (lower_char := char.lower()) != char:
             l[i] = "_" + lower_char if i > 0 else lower_char
     return "".join(l)
+
 
 def snake_to_camel(s: str):
     """Returns a snake-cased version of the string."""
