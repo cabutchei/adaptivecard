@@ -13,8 +13,9 @@ class Container(Mixin):
     """A grouping of elements. Containers are useful for grouping a number of related elements
     into one structure. All elements inside a container will inherit its styling attributes
     upon rendering of the card."""
-    __slots__ = ('type', 'items', 'style', 'vertical_content_alignment', 'bleed', 'min_height',
+    __slots__ = ('items', 'style', 'vertical_content_alignment', 'bleed', 'min_height',
                  'rtl', 'height', 'separator', 'spacing', 'id', 'is_visible')
+    type = "Container"
     def __init__(self,
                  items: _base_types.Element | ListLike[_base_types.Element] = DefaultNone,
                  style: Literal["default", "emphasis", "good", "attention", "warning", "accent"] = DefaultNone,
@@ -29,7 +30,6 @@ class Container(Mixin):
                  id: str = DefaultNone,
                  is_visible: bool = DefaultNone):
 
-        self.type = "Container"
         if items is DefaultNone:
             items = ElementList()
         self.items: ElementList = items
@@ -49,10 +49,12 @@ class Container(Mixin):
         return len(self.items) == 0
 
     def append(self, element: _base_types.Element):
+        if isinstance(element, str):
+            element = TextBlock(element)
         self.items.append(element)
 
     def __iter__(self):
-        return iter(self.items)
+        return self.items.__iter__()
 
     @overload
     def __getitem__(self, __i: int):
@@ -64,14 +66,22 @@ class Container(Mixin):
 
     def __getitem__(self, k):
         return self.items.__getitem__(k)
+    
+    def __setitem__(self, __key, __value):
+        if isinstance(__value, str):
+            __value = TextBlock(__value)
+        return self.items.__setitem__(__key, __value)
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(items={self.items})"
+        # return f"{self.__class__.__name__}(items={self.items})"
+        return f"{self.__class__.__name__}({self.items})"
 
     def __str__(self) -> str:
         return "[" + ", ".join([str(item) for item in self.items]) + "]"
     
     def __setattr__(self, __name: str, __value: Any) -> None:
+        if __value is DefaultNone:
+            return
         if __name == 'items':
             if isinstance(__value, ListLike):
                 __value = ElementList(__value)
@@ -80,21 +90,22 @@ class Container(Mixin):
         elif __name == "min_height":
             try:
                 __value = convert_to_pixel_string(__value)
-            except ValueError:
-                raise_invalid_pixel_error()
+            except (TypeError, ValueError):
+                raise_invalid_pixel_error(__name, __value)
         return super().__setattr__(__name, __value)
 
 
 class Column(Mixin):
     """A column container. Columns must be grouped inside a ColumnSet."""
-    __slots__ = ('type', 'items', 'background_image', 'bleed', 'fallback', 'min_height',
+    __slots__ = ('items', 'background_image', 'bleed', 'fallback', 'min_height',
                  'rtl', 'separator', 'spacing', 'style', 'vertical_content_alignment', 'rtl',
                  'width', 'id', 'is_visible')
+    type = "Column"
     def __init__(self,
                  items: _base_types.Element | ListLike[_base_types.Element | Any] | Any = DefaultNone,
                  background_image = DefaultNone,
                  bleed: bool = DefaultNone,
-                 fallback: "Column" = DefaultNone,
+                 fallback: _base_types.Column = DefaultNone,
                  min_height: str | int = DefaultNone,
                  rtl: bool = DefaultNone,
                  separator: bool = DefaultNone,
@@ -109,7 +120,6 @@ class Column(Mixin):
                  id: str = DefaultNone,
                  is_visible: bool = DefaultNone):
 
-        self.type = "Column"
         if items is DefaultNone:
             items = ElementList()
         self.items: ElementList = items
@@ -133,7 +143,7 @@ class Column(Mixin):
         self.items.append(value)
 
     def __iter__(self):
-        return iter(self.items)
+        return self.items.__iter__()
     
     def __getitem__(self, __i, /):
         return self.items.__getitem__(__i)
@@ -158,7 +168,7 @@ class Column(Mixin):
                                  for item in __value])
             else:
                 __value = ElementList([TextBlock(__value)])
-        elif __name == "min_height" or __name == "width":
+        elif __name in ("min_height", "width"):
             try:
                 __value = convert_to_pixel_string(__value)
             except ValueError:
@@ -168,8 +178,9 @@ class Column(Mixin):
 
 class ColumnSet(Mixin):
     """A container for columns."""
-    __slots__ = ('type', 'columns', 'style', 'bleed', 'min_height', 'horizontal_alignment', 'height',
+    __slots__ = ('columns', 'style', 'bleed', 'min_height', 'horizontal_alignment', 'height',
                  'separator', 'spacing', 'id', 'is_visible')
+    type = 'ColumnSet'
     def __init__(self,
                  columns: ListLike[Column | ListLike[Any]] = DefaultNone,
                  select_action: _base_types.Execute | _base_types.OpenUrl | _base_types.Submit
@@ -187,7 +198,6 @@ class ColumnSet(Mixin):
                  id: str = DefaultNone,
                  is_visible: bool = DefaultNone):
 
-        self.type = 'ColumnSet'
         if columns is DefaultNone:
             columns = ColumnList()
         self.columns: ColumnList = columns
@@ -254,8 +264,9 @@ class ColumnSet(Mixin):
 
 
 class TableCell(Mixin):
-    __slots__ = ('type', 'items', 'select_action', 'style', 'vertical_alignment', 'bleed',
+    __slots__ = ('items', 'select_action', 'style', 'vertical_alignment', 'bleed',
                  'background_image', 'min_height', 'rtl')
+    type = "TableCell"
     def __init__(self,
                  items: Any | ListLike[Any] = DefaultNone,
                  select_action: _base_types.Execute | _base_types.OpenUrl | _base_types.Submit
@@ -268,7 +279,6 @@ class TableCell(Mixin):
                  min_height: str | int = DefaultNone,
                  rtl: bool = DefaultNone):
 
-        self.type = "TableCell"
         if items is DefaultNone:
             items = ElementList()
         self.items: ElementList = items
@@ -339,12 +349,12 @@ class TableCell(Mixin):
 
 
 class TableRow(Mixin):
-    __slots__ = ("type", "cells", "style")
+    __slots__ = ("cells", "style")
+    type = "TableRow"
     def __init__(self,
                  cells: ListLike[Any] = DefaultNone,
                  style: Literal["default", "emphasis", "good", "attention", "warning",
                                 "accent"] = DefaultNone):
-        self.type = "TableRow"
         if cells is DefaultNone:
             cells = ElementList()
         self.cells = cells
@@ -415,6 +425,7 @@ class Table(Mixin):
     __slots__ = ('type', 'columns', 'rows', 'first_row_as_header', 'show_grid_lines', 'grid_style',
                  'horizontal_cell_content_alignment', 'vertical_cell_content_alignment', 'fallback', 'height',
                  'separator', 'spacing', 'id', 'is_visible')
+    type = "Table"
     def __init__(self,
                  rows: ListLike[ListLike] = DefaultNone,
                  first_row_as_header: bool = DefaultNone,
@@ -432,7 +443,6 @@ class Table(Mixin):
                  id: str = DefaultNone,
                  is_visible: bool = DefaultNone):
 
-        self.type = "Table"
         if rows is DefaultNone:
             rows = []
         self.rows: RowList = rows
@@ -510,7 +520,8 @@ class Table(Mixin):
 
 
 class ActionSet(Mixin):
-    __slots__ = ("type", "actions", "fallback", "height", "separator", "spacing", "id", "is_visible")
+    __slots__ = ("actions", "fallback", "height", "separator", "spacing", "id", "is_visible")
+    type = "ActionSet"
     def __init__(self,
                  actions: _base_types.Action | ListLike[_base_types.Action] = DefaultNone,
                  fallback: _base_types.Element = DefaultNone,
@@ -521,7 +532,6 @@ class ActionSet(Mixin):
                  id: str = DefaultNone,
                  is_visible: bool = DefaultNone
                  ):
-        self.type = "ActionSet"
         if actions is DefaultNone:
             actions = ElementList()
         self.actions: ElementList = actions
