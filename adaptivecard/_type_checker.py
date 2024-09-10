@@ -56,7 +56,10 @@ def get_deepest_error(errors):
         if error_tree._contents:
             offending_element = next(iter(error_tree))
             errors = error_tree[offending_element].errors
-            child_error = next(iter(errors.values()))
+            try:
+                child_error = next(iter(errors.values()))
+            except StopIteration:
+                raise Exception("internal type checking error")
             while (child_errors := child_error.context):
                 child_error = next(iter(child_errors))
             Error = namedtuple("Error", ("element", "error"))

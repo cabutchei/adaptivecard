@@ -1,4 +1,5 @@
 from json import dump
+from adaptivecard._typing import DefaultNone
 
 
 def raise_invalid_pixel_error(arg_name: str, arg_value):
@@ -9,8 +10,11 @@ def raise_invalid_pixel_error(arg_name: str, arg_value):
         raise TypeError(msg)
 
 
-def convert_to_pixel_string(s):
-    if isinstance(s, str):
+def get_pixel_string(s: int | str):
+    """Returns a string-formatted version of s ("{s}px"). Leaves s unchanged if s is DefaultNone."""
+    if s is DefaultNone:
+        s = s
+    elif isinstance(s, str):
         if not s.replace('px', '').isdecimal():
             raise ValueError("invalid pixel string")
         s = s.replace('px', '') + 'px'
@@ -20,6 +24,11 @@ def convert_to_pixel_string(s):
         raise TypeError("invalid type")
     return s
 
+def convert_to_pixel_string(s: int | str):
+    try:
+        return get_pixel_string(s)
+    except (TypeError, ValueError):
+        raise_invalid_pixel_error()
 
 def camel_to_snake(s: str):
     l = list(s)

@@ -53,7 +53,7 @@ class Container(Mixin):
             element = TextBlock(element)
         self.items.append(element)
 
-    def append_many(self, elements: Iterable[_base_types.Element]):
+    def append_all(self, elements: Iterable[_base_types.Element]):
         for element in elements:
             self.append(element)
 
@@ -83,18 +83,13 @@ class Container(Mixin):
         return "[" + ", ".join([str(item) for item in self.items]) + "]"
     
     def __setattr__(self, __name: str, __value: Any) -> None:
-        if __value is DefaultNone:
-            return
         if __name == 'items':
             if isinstance(__value, ListLike):
                 __value = ElementList(__value)
             elif isinstance(__value, _base_types.Element):
                 __value = ElementList([__value])
         elif __name == "min_height":
-            try:
-                __value = convert_to_pixel_string(__value)
-            except (TypeError, ValueError):
-                raise_invalid_pixel_error(__name, __value)
+            __value = convert_to_pixel_string(__value)
         return super().__setattr__(__name, __value)
 
 
@@ -145,7 +140,7 @@ class Column(Mixin):
             element = TextBlock(element)
         self.items.append(element)
 
-    def append_many(self, elements: Iterable[_base_types.Element]):
+    def append_all(self, elements: Iterable[_base_types.Element]):
         for element in elements:
             self.append(element)
 
@@ -165,8 +160,6 @@ class Column(Mixin):
         return f"{self.__class__.__name__}({self.items})"
 
     def __setattr__(self, __name: str, __value: Any) -> None:
-        if __value is DefaultNone:
-            return
         if __name == "items":
             items = ElementList()
             if isinstance(__value, ListLike):
@@ -183,10 +176,7 @@ class Column(Mixin):
             __value = items
 
         elif __name in ("min_height", "width"):
-            try:
-                __value = convert_to_pixel_string(__value)
-            except (TypeError, ValueError):
-                raise_invalid_pixel_error(__name, __value)
+            __value = convert_to_pixel_string(__value)
         return super().__setattr__(__name, __value)
 
 
@@ -258,8 +248,6 @@ class ColumnSet(Mixin):
         return "[" + ", ".join([str(col) for col in self.columns]) + "]"
 
     def __setattr__(self, __name: str, __value) -> None:
-        if __value is DefaultNone:
-            return
         if __name == "columns":
             if not isinstance(__value, ListLike):
                 raise TypeError(f"expected a list-like value")
@@ -270,10 +258,7 @@ class ColumnSet(Mixin):
                 columns.append(item)
             __value = columns
         elif __name == "min_height":
-            try:
-                __value = convert_to_pixel_string(__value)
-            except (TypeError, ValueError):
-                raise_invalid_pixel_error(__name, __value)
+            __value = convert_to_pixel_string(__value)
         return super().__setattr__(__name, __value)
 
 
@@ -310,9 +295,6 @@ class TableCell(Mixin):
             item = TextBlock(item)
         self.items.append(item)
 
-    def squeeze(self):
-        ...
-
     @overload
     def __getitem__(self, __i: int):
         ...
@@ -341,20 +323,17 @@ class TableCell(Mixin):
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "items":
             items = ElementList()
-            if isinstance(items, ListLike):
+            if isinstance(__value, ListLike):
                 for item in __value:
                     if not isinstance(item, _base_types.Element):
                         item = TextBlock(item)
                     items.append(item)
-                __value = items
-            if not isinstance(items, _base_types.Element):
-                __value = TextBlock(items)
+            elif not isinstance(__value, _base_types.Element):
+                items.append(TextBlock(__value))
+            __value = items
         elif __name == "min_height":
             min_height = __value
-            try:
-                min_height = convert_to_pixel_string(min_height)
-            except (TypeError, ValueError):
-                raise_invalid_pixel_error(__name, min_height)
+            min_height = convert_to_pixel_string(min_height)
             __value = min_height
         return super().__setattr__(__name, __value)
 
@@ -411,7 +390,7 @@ class TableRow(Mixin):
         return len(self.cells)
 
     def __iter__(self):
-        return iter(self.cells)
+        return self.cells.__iter__()
     
     def index(self, value=1, start: int = 0, stop: int = maxsize, /):
         return self.cells.index(value, start, stop)
