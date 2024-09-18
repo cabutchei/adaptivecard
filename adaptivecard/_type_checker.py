@@ -55,11 +55,13 @@ def get_deepest_error(errors):
         error_tree = ErrorTree([error])
         if error_tree._contents:
             offending_element = next(iter(error_tree))
-            errors = error_tree[offending_element].errors
-            try:
-                child_error = next(iter(errors.values()))
-            except StopIteration:
-                raise Exception("internal type checking error")
+            child_tree = error_tree[offending_element]
+            errors = child_tree.errors
+            while not errors:
+                sub = next(iter(child_tree._contents))
+                child_tree = child_tree._contents[sub]
+                errors = child_tree.errors
+            child_error = next(iter(errors.values()))
             while (child_errors := child_error.context):
                 child_error = next(iter(child_errors))
             Error = namedtuple("Error", ("element", "error"))
@@ -99,7 +101,7 @@ def check_types(schema: dict, obj: dict):
 
 def check_type(schema: dict, attr_name: str, attr_value):
     validator = CardValidator(schema)
-    obj = {attr_name: attr_value}
+    obj = {snake_to_camel(attr_name): attr_value}
     error = get_deepest_error(validator.iter_errors(obj))
     if error is None:
         return

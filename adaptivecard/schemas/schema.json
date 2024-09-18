@@ -39,13 +39,14 @@
   
           },
           "id": {
-  
+            "type": "string",
+            "description": "A unique identifier associated with the item."
           },
           "style": {
   
           },
           "fallback": {
-  
+
           },
           "tooltip": {
   
@@ -89,13 +90,21 @@
   
           },
           "id": {
-  
+            "type": "string",
+            "description": "A unique identifier associated with the item."
           },
           "style": {
   
           },
           "fallback": {
-  
+            "anyOf": [
+              {
+                "$ref": "#/definitions/Extendable.Action"
+              },
+              {
+                "$ref": "#/definitions/FallbackOption"
+              }
+            ]
           },
           "tooltip": {
   
@@ -141,7 +150,8 @@
   
           },
           "id": {
-  
+            "type": "string",
+            "description": "A unique identifier associated with the item."
           },
           "style": {
   
@@ -203,7 +213,8 @@
   
           },
           "id": {
-  
+            "type": "string",
+            "description": "A unique identifier associated with the item."
           },
           "style": {
   
@@ -256,7 +267,8 @@
   
           },
           "id": {
-  
+            "type": "string",
+            "description": "A unique identifier associated with the item."
           },
           "style": {
   
@@ -461,19 +473,21 @@
   
           },
           "height": {
-  
+            "$ref": "#/definitions/BlockElementHeight"
           },
           "separator": {
-  
+            "type": "boolean"
           },
           "spacing": {
-  
+            "$ref": "#/definitions/Spacing"
           },
           "id": {
-  
+            "type": "string",
+            "description": "A unique identifier associated with the item."
           },
           "isVisible": {
-  
+            "type": "boolean",
+            "default": true
           },
           "requires": {
   
@@ -611,10 +625,12 @@
               "description": "`\"auto\"`, `\"stretch\"`, a number representing relative width of the column in the column group, or in version 1.1 and higher, a specific pixel width, like `\"50px\"`."
             },
             "id": {
-        
+            "type": "string",
+            "description": "A unique identifier associated with the item."
             },
             "isVisible": {
-        
+              "type": "boolean",
+              "default": true
             },
             "requires": {
         
@@ -693,19 +709,21 @@
   
           },
           "height": {
-  
+            "$ref": "#/definitions/BlockElementHeight"
           },
           "separator": {
-  
+            "type": "boolean"
           },
           "spacing": {
-  
+            "$ref": "#/definitions/BlockElementHeight"
           },
           "id": {
-  
+            "type": "string",
+            "description": "A unique identifier associated with the item."
           },
           "isVisible": {
-  
+            "type": "boolean",
+            "default": true
           },
           "requires": {
   
@@ -808,19 +826,21 @@
   
           },
           "height": {
-  
+            "$ref": "#/definitions/BlockElementHeight"
           },
           "separator": {
-  
+            "type": "boolean"
           },
           "spacing": {
-  
+            "$ref": "#/definitions/Spacing"
           },
           "id": {
-  
+            "type": "string",
+            "description": "A unique identifier associated with the item."
           },
           "isVisible": {
-  
+            "type": "boolean",
+            "default": true
           },
           "requires": {
   
@@ -882,19 +902,21 @@
   
           },
           "height": {
-  
+            "$ref": "#/definitions/BlockElementHeight"
           },
           "separator": {
-  
+            "type": "boolean"
           },
           "spacing": {
-  
+            "$ref": "#/definitions/Spacing"
           },
           "id": {
-  
+            "type": "string",
+            "description": "A unique identifier associated with the item."
           },
           "isVisible": {
-  
+            "type": "boolean",
+            "default": true
           },
           "requires": {
   
@@ -1050,22 +1072,31 @@
             "description": "Controls the approximate size of each image. The physical dimensions will vary per host. Auto and stretch are not supported for ImageSet. The size will default to medium if those values are set."
           },
           "fallback": {
-  
+            "anyOf": [
+              {
+                "$ref": "#/definitions/ImplementationsOf.Element"
+              },
+              {
+                "$ref": "#/definitions/FallbackOption"
+              }
+            ]
           },
           "height": {
-  
+              "$ref": "#/definitions/BlockElementHeight"
           },
           "separator": {
-  
+            "type": "boolean"
           },
           "spacing": {
-  
+            "$ref": "#/definitions/Spacing"
           },
           "id": {
-  
+            "type": "string",
+            "description": "A unique identifier associated with the item."
           },
           "isVisible": {
-  
+            "type": "boolean",
+            "default": true
           },
           "requires": {
   
@@ -1251,7 +1282,8 @@
             "version": "1.2"
           },
           "id": {
-  
+            "type": "string",
+            "description": "A unique identifier associated with the item."
           },
           "errorMessage": {
   
@@ -1263,19 +1295,27 @@
   
           },
           "fallback": {
-  
+            "anyOf": [
+              {
+                "$ref": "#/definitions/ImplementationsOf.Element"
+              },
+              {
+                "$ref": "#/definitions/FallbackOption"
+              }
+            ]
           },
           "height": {
-  
+              "$ref": "#/definitions/BlockElementHeight"
           },
           "separator": {
-  
+            "type": "boolean"
           },
           "spacing": {
-  
+            "$ref": "#/definitions/Spacing"
           },
           "isVisible": {
-  
+            "type": "boolean",
+            "default": true
           },
           "requires": {
   
@@ -1315,7 +1355,8 @@
             "description": "The initial value for this field expressed in YYYY-MM-DD."
           },
           "id": {
-  
+            "type": "string",
+            "description": "A unique identifier associated with the item."
           },
           "errorMessage": {
   
@@ -1327,19 +1368,27 @@
   
           },
           "fallback": {
-  
+            "anyOf": [
+              {
+                "$ref": "#/definitions/ImplementationsOf.Element"
+              },
+              {
+                "$ref": "#/definitions/FallbackOption"
+              }
+            ]
           },
           "height": {
-  
+              "$ref": "#/definitions/BlockElementHeight"
           },
           "separator": {
-  
+            "type": "boolean"
           },
           "spacing": {
-  
+            "$ref": "#/definitions/Spacing"
           },
           "isVisible": {
-  
+            "type": "boolean",
+            "default": true
           },
           "requires": {
   
@@ -1379,7 +1428,8 @@
             "description": "Initial value for this field."
           },
           "id": {
-  
+            "type": "string",
+            "description": "A unique identifier associated with the item."
           },
           "errorMessage": {
   
@@ -1391,19 +1441,27 @@
   
           },
           "fallback": {
-  
+            "anyOf": [
+              {
+                "$ref": "#/definitions/ImplementationsOf.Element"
+              },
+              {
+                "$ref": "#/definitions/FallbackOption"
+              }
+            ]
           },
           "height": {
-  
+              "$ref": "#/definitions/BlockElementHeight"
           },
           "separator": {
-  
+            "type": "boolean"
           },
           "spacing": {
-  
+            "$ref": "#/definitions/Spacing"
           },
           "isVisible": {
-  
+            "type": "boolean",
+            "default": true
           },
           "requires": {
   
@@ -1458,7 +1516,8 @@
             "description": "The initial value for this field."
           },
           "id": {
-  
+            "type": "string",
+            "description": "A unique identifier associated with the item."
           },
           "errorMessage": {
   
@@ -1470,19 +1529,27 @@
   
           },
           "fallback": {
-  
+            "anyOf": [
+              {
+                "$ref": "#/definitions/ImplementationsOf.Element"
+              },
+              {
+                "$ref": "#/definitions/FallbackOption"
+              }
+            ]
           },
           "height": {
-  
+              "$ref": "#/definitions/BlockElementHeight"
           },
           "separator": {
-  
+            "type": "boolean"
           },
           "spacing": {
-  
+            "$ref": "#/definitions/Spacing"
           },
           "isVisible": {
-  
+            "type": "boolean",
+            "default": true
           },
           "requires": {
   
@@ -1522,7 +1589,8 @@
             "description": "The initial value for this field expressed in HH:MM."
           },
           "id": {
-  
+            "type": "string",
+            "description": "A unique identifier associated with the item."
           },
           "errorMessage": {
   
@@ -1534,19 +1602,27 @@
   
           },
           "fallback": {
-  
+            "anyOf": [
+              {
+                "$ref": "#/definitions/ImplementationsOf.Element"
+              },
+              {
+                "$ref": "#/definitions/FallbackOption"
+              }
+            ]
           },
           "height": {
-  
+              "$ref": "#/definitions/BlockElementHeight"
           },
           "separator": {
-  
+            "type": "boolean"
           },
           "spacing": {
-  
+            "$ref": "#/definitions/Spacing"
           },
           "isVisible": {
-  
+            "type": "boolean",
+            "default": true
           },
           "requires": {
   
@@ -1594,7 +1670,8 @@
             "version": "1.2"
           },
           "id": {
-  
+            "type": "string",
+            "description": "A unique identifier associated with the item."
           },
           "errorMessage": {
   
@@ -1606,19 +1683,27 @@
   
           },
           "fallback": {
-  
+            "anyOf": [
+              {
+                "$ref": "#/definitions/ImplementationsOf.Element"
+              },
+              {
+                "$ref": "#/definitions/FallbackOption"
+              }
+            ]
           },
           "height": {
-  
+              "$ref": "#/definitions/BlockElementHeight"
           },
           "separator": {
-  
+            "type": "boolean"
           },
           "spacing": {
-  
+            "$ref": "#/definitions/Spacing"
           },
           "isVisible": {
-  
+            "type": "boolean",
+            "default": true
           },
           "requires": {
   
@@ -1663,22 +1748,31 @@
             "description": "Alternate text describing the audio or video."
           },
           "fallback": {
-  
+            "anyOf": [
+              {
+                "$ref": "#/definitions/ImplementationsOf.Element"
+              },
+              {
+                "$ref": "#/definitions/FallbackOption"
+              }
+            ]
           },
           "height": {
-  
+              "$ref": "#/definitions/BlockElementHeight"
           },
           "separator": {
-  
+            "type": "boolean"
           },
           "spacing": {
-  
+            "$ref": "#/definitions/Spacing"
           },
           "id": {
-  
+            "type": "string",
+            "description": "A unique identifier associated with the item."
           },
           "isVisible": {
-  
+            "type": "boolean",
+            "default": true
           },
           "requires": {
   
@@ -1753,22 +1847,31 @@
             "description": "Controls the horizontal text alignment. When not specified, the value of horizontalAlignment is inherited from the parent container. If no parent container has horizontalAlignment set, it defaults to Left."
           },
           "fallback": {
-  
+            "anyOf": [
+              {
+                "$ref": "#/definitions/ImplementationsOf.Element"
+              },
+              {
+                "$ref": "#/definitions/FallbackOption"
+              }
+            ]
           },
           "height": {
-  
+            "$ref": "#/definitions/BlockElementHeight"
           },
           "separator": {
-  
+            "type": "boolean"
           },
           "spacing": {
-  
+            "$ref": "#/definitions/Spacing"
           },
           "id": {
-  
+            "type": "string",
+            "description": "A unique identifier associated with the item."
           },
           "isVisible": {
-  
+            "type": "boolean",
+            "default": true
           },
           "requires": {
   
@@ -1798,7 +1901,10 @@
           "columns": {
             "type": "array",
             "items": {
-              "$ref": "#/definitions/TableColumnDefinition"
+              "anyOf":[
+                {"$ref": "#/definitions/TableColumnDefinition"},
+                {"type": "number"}
+              ]
             },
             "description": "Defines the number of columns in the table, their sizes, and more."
           },
@@ -1854,22 +1960,31 @@
             "description": "Controls how the content of all cells is vertically aligned by default. When not specified, vertical alignment is defined on a per-cell basis."
           },
           "fallback": {
-  
+            "anyOf": [
+              {
+                "$ref": "#/definitions/ImplementationsOf.Element"
+              },
+              {
+                "$ref": "#/definitions/FallbackOption"
+              }
+            ]
           },
           "height": {
-  
+            "$ref": "#/definitions/BlockElementHeight"
           },
           "separator": {
-  
+            "type": "boolean"
           },
           "spacing": {
-  
+            "$ref": "#/definitions/Spacing"
           },
           "id": {
-  
+            "type": "string",
+            "description": "A unique identifier associated with the item."
           },
           "isVisible": {
-  
+            "type": "boolean",
+            "default": true
           },
           "requires": {
   
@@ -2088,10 +2203,10 @@
         "anyOf": [
             {"type": "TextBlock"},
             {"properties": {
-            "type": {
-              "enum": [
-                "TextBlock"
-              ],
+              "type": {
+                "enum": [
+                  "TextBlock"
+                ],
               "description": "Must be `TextBlock`"
             },
             "text": {
@@ -2188,22 +2303,31 @@
               "default": "default"
             },
             "fallback": {
-    
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/ImplementationsOf.Element"
+                },
+                {
+                  "$ref": "#/definitions/FallbackOption"
+                }
+              ]
             },
             "height": {
-    
+              "$ref": "#/definitions/BlockElementHeight"
             },
             "separator": {
-    
+              "type": "boolean"
             },
             "spacing": {
-    
+            "$ref": "#/definitions/Spacing"
             },
             "id": {
-    
+              "type": "string",
+              "description": "A unique identifier associated with the item."
             },
             "isVisible": {
-    
+              "type": "boolean",
+              "default": true
             },
             "requires": {
     
@@ -2224,6 +2348,7 @@
         "description": "Determines whether an action is displayed with a button or is moved to the overflow menu.",
         "features": [4715],
         "version": "1.5",
+        "type": "string",
         "anyOf": [
           {
             "enum": [
@@ -2240,6 +2365,7 @@
         "description": "Controls the style of an Action, which influences how the action is displayed, spoken, etc.",
         "features": [861],
         "version": "1.2",
+        "type": "string",
         "anyOf": [
           {
             "enum": [
@@ -2254,6 +2380,7 @@
         ]
       },
       "AssociatedInputs": {
+        "type": "string",
         "anyOf": [
           {
             "enum": [
@@ -2267,6 +2394,7 @@
         ]
       },
       "BlockElementHeight": {
+        "type": "string",
         "anyOf": [
           {
             "enum": [
@@ -2281,6 +2409,7 @@
       },
       "ChoiceInputStyle": {
         "description": "Style hint for `Input.ChoiceSet`.",
+        "type": "string",
         "anyOf": [
           {
             "enum": [
@@ -2294,6 +2423,7 @@
         ]
       },
       "Colors": {
+        "type": "string",
         "anyOf": [
           {
             "enum": [
@@ -2312,6 +2442,7 @@
         ]
       },
       "ContainerStyle": {
+        "type": "string",
         "anyOf": [
           {
             "enum": [
@@ -2329,6 +2460,7 @@
         ]
       },
       "FallbackOption": {
+        "type": "string",
         "anyOf": [
           {
             "enum": [
@@ -2341,6 +2473,7 @@
         ]
       },
       "FontSize": {
+        "type": "string",
         "anyOf": [
           {
             "enum": [
@@ -2357,6 +2490,7 @@
         ]
       },
       "FontType": {
+        "type": "string",
         "anyOf": [
           {
             "enum": [
@@ -2370,6 +2504,7 @@
         ]
       },
       "FontWeight": {
+        "type": "string",
         "anyOf": [
           {
             "enum": [
@@ -2385,6 +2520,7 @@
       },
       "HorizontalAlignment": {
         "description": "Controls how content is horizontally positioned within its container.",
+        "type": "string",
         "anyOf": [
           {
             "enum": [
@@ -2399,6 +2535,7 @@
         ]
       },
       "ImageFillMode": {
+        "type": "string",
         "anyOf": [
           {
             "enum": [
@@ -2415,6 +2552,7 @@
       },
       "ImageSize": {
         "description": "Controls the approximate size of the image. The physical dimensions will vary per host. Every option preserves aspect ratio.",
+        "type": "string",
         "anyOf": [
           {
             "enum": [
@@ -2432,6 +2570,7 @@
       },
       "ImageStyle": {
         "description": "Controls how this `Image` is displayed.",
+        "type": "string",
         "anyOf": [
           {
             "enum": [
@@ -2446,6 +2585,7 @@
       },
       "Spacing": {
         "description": "Specifies how much spacing. Hosts pick the exact pixel amounts for each of these.",
+        "type": "string",
         "anyOf": [
           {
             "enum": [
@@ -2466,6 +2606,7 @@
       "TextBlockStyle": {
         "description": "Controls how a TextBlock behaves.",
         "version": "1.5",
+        "type": "string",
         "anyOf": [
           {
             "enum": [
@@ -2480,6 +2621,7 @@
       },
       "TextInputStyle": {
         "description": "Style hint for text input.",
+        "type": "string",
         "anyOf": [
           {
             "enum": [
@@ -2496,6 +2638,7 @@
         ]
       },
       "VerticalAlignment": {
+        "type": "string",
         "anyOf": [
           {
             "enum": [
@@ -2510,6 +2653,7 @@
         ]
       },
       "VerticalContentAlignment": {
+        "type": "string",
         "anyOf": [
           {
             "enum": [
@@ -3501,10 +3645,12 @@
             "description": "Controls the amount of spacing between this element and the preceding element."
           },
           "id": {
-  
+            "type": "string",
+            "description": "A unique identifier associated with the item."
           },
           "isVisible": {
-  
+            "type": "boolean",
+            "default": true
           },
           "requires": {
   

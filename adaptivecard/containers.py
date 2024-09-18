@@ -473,14 +473,19 @@ class Table(Mixin):
         if not isinstance(row, TableRow):
             row = TableRow(row)
         self.rows.append(row)
+
+    def append_all(self, rows: Iterable[_base_types.TableRow]):
+        for row in rows:
+            self.append(row)
     
     # custom to_dict para lidar com o formato atípico do atributo columns dentro do json
     def to_dict(self):
         dic = super().to_dict()
+        default_width = 1
         if hasattr(self, "columns") and self.columns:
             json_columns = [{"width": width} for width in self.columns]
         elif self.rows:
-            json_columns = [{"width": 1} for _ in self.rows[0]]
+            json_columns = [{"width": default_width} for _ in self.rows[0]]
         else:
             json_columns = dic["columns"]
         dic["columns"] = json_columns
