@@ -5,7 +5,6 @@ from adaptivecard._mixin import Mixin
 from adaptivecard.card_elements import TextBlock
 from adaptivecard._utils import convert_to_pixel_string, raise_invalid_pixel_error
 from adaptivecard._typing import ListLike, DefaultNone, ElementList, ColumnList, RowList, CellList
-from tabulate import tabulate
 
 
 
@@ -494,13 +493,14 @@ class Table(Mixin):
     def __len__(self):
         return len(self.rows)
     
-    def __str__(self):
-        rows = [["\n".join([str(item) for item in cell.items]) for cell in row.cells] for row in self.rows]
-        if getattr(self, "first_row_as_header", False) and self.rows:
-            headers, *rows = rows
-            return tabulate(rows, headers, tablefmt='grid')
+    def __repr__(self):
+        lstring = ", ".join([row.__repr__() for row in self.rows])
+        lstring = f"{self.__class__.__name__}({lstring})"
+        return lstring
 
-        return tabulate(rows, tablefmt='grid')
+    def __str__(self):
+        lstring = f"[{', '.join([str(row) for row in self.rows])}]"
+        return lstring
 
     def __iter__(self):
         return iter(self.rows)
