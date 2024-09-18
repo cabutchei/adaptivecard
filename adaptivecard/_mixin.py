@@ -1,10 +1,9 @@
 from typing import Any
 from adaptivecard._typing import DefaultNone
-from adaptivecard._base_types import Element
+from adaptivecard._base_types import Element, Choice
 from adaptivecard._utils import snake_to_camel, get_schema_path
 from adaptivecard._type_checker import check_types, check_type, get_validation_schema_for_property
 from adaptivecard.schemas.schema import schema
-
 
 
 class Mixin:
@@ -12,7 +11,8 @@ class Mixin:
 
     def to_dict(self):
         dic = {}
-        dic["type"] = self.type
+        if hasattr(self, "type"):
+            dic["type"] = self.type
         for attr_name, attr_value in {attr_name: getattr(self, attr_name) for attr_name in self.__slots__ if hasattr(self, attr_name)}.items():
             camel_formated_attr_name = snake_to_camel(attr_name)
             if isinstance(attr_value, Element):
@@ -30,7 +30,12 @@ class Mixin:
         # do not create attributes that are set to DefaultNone, i.e., if the user did not input any value
         if __value is DefaultNone:
             return
-        validation_schema = get_validation_schema_for_property(schema, self.type, __name)
+        if isinstance(self, Choice):
+            element_type = "Input.Choice"
+        else:
+            element_type = self.type
+
+        validation_schema = get_validation_schema_for_property(schema, element_type, __name)
         if validation_schema is not None:
             check_type(validation_schema, __name, __value)
         super().__setattr__(__name, __value)

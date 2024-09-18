@@ -12,13 +12,15 @@ class Content(Mixin):
     def __init__(self, content: _base_types.AdaptiveCard):
         self.content_type = "application/vnd.microsoft.card.adaptive"
         self.content = content
+    def __setattr__(self, __name: str, __value: Any) -> None:
+        return object.__setattr__(self, __name, __value)
 
 
 class Message(Mixin):
     """"Estrutura de mensagem. Um card precisa estar contido em uma mensagem para ser enviado via Teams."""
-    __slots__ = ('type', 'attachments')
+    __slots__ = ('attachments',)
+    type = "message"
     def __init__(self, attachments: ListLike[_base_types.Content] = DefaultNone):
-        self.type = "message"
         if attachments is DefaultNone:
             attachments = []
         self.attachments = list(attachments)
@@ -26,13 +28,16 @@ class Message(Mixin):
     def attach(self, content):
         self.attachments.append(content)
 
+    def __setattr__(self, __name: str, __value: Any) -> None:
+        return object.__setattr__(self, __name, __value)
+
 
 class AdaptiveCard(Mixin):
     """O template principal do card"""  # Essas descrições hão de ficar mais detalhadas à medida que eu desenvolver a lib e sua documentação
-    __slots__ = ("type", "version", "schema", "body", "actions", "fallback_text", "background_image", "min_height",
+    __slots__ = ("version", "schema", "body", "actions", "fallback_text", "background_image", "min_height",
                  "rtl", "speak", "lang", "vertical_content_alignment")
+    type = "AdaptiveCard"
     def __init__(self,
-                 version: str | float = "1.2",
                  body: _base_types.Element | ListLike[_base_types.Element] = DefaultNone,
                  actions: _base_types.Action | ListLike[_base_types.Action] = DefaultNone,
                  fallback_text: str = DefaultNone,
@@ -41,9 +46,9 @@ class AdaptiveCard(Mixin):
                  rtl: bool = DefaultNone,
                  speak: str = DefaultNone,
                  lang: str = DefaultNone,
-                 vertical_content_alignment: Literal["top", "center", "bottom"] = DefaultNone):
+                 vertical_content_alignment: Literal["top", "center", "bottom"] = DefaultNone,
+                 version: str | float = "1.2"):
         
-        self.type = "AdaptiveCard"
         self.version = version  
         self.schema = "http://adaptivecards.io/schemas/adaptive-card.json"
         if body is DefaultNone:

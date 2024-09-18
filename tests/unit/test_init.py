@@ -8,7 +8,7 @@ from adaptivecard.exceptions import *
 class Test:
     def test_(self):
         card = AdaptiveCard()
-        with pytest.raises(TypeCheckError):
+        with pytest.raises(TypeError):
             AdaptiveCard([1,2,3])
         with pytest.raises(TypeError):
             card.append("")

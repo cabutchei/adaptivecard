@@ -5,8 +5,9 @@ from adaptivecard._typing import ListLike, DefaultNone
 
 
 class ShowCard(Mixin):
-    __slots__ = ('type', 'title', 'icon_url', 'id', 'style', 'fallback', 'tooltip', 'is_enabled',
+    __slots__ = ('title', 'icon_url', 'id', 'style', 'fallback', 'tooltip', 'is_enabled',
                  'mode', 'card')
+    type = "Action.ShowCard"
     def __init__(self,
                  card: _base_types.AdaptiveCard,
                  title: str = DefaultNone,
@@ -18,7 +19,6 @@ class ShowCard(Mixin):
                  is_enabled: bool = DefaultNone,
                  mode: Literal["primary", "secondary"] = DefaultNone):
         
-        self.type = "Action.ShowCard"
         self.title = title
         self.icon_url = icon_url
         self.id = id
@@ -32,6 +32,7 @@ class ShowCard(Mixin):
 
 class OpenUrl(Mixin):
     __slots__ = ("url", "title", "id", "style", "fallback", "tooltip", "is_enabled", "mode")
+    type = "Action.OpenUrl"
     def __init__(self,
                  url: str,
                  title: str = DefaultNone,
@@ -42,7 +43,6 @@ class OpenUrl(Mixin):
                  is_enabled: bool = DefaultNone,
                  mode: Literal["primary", "secondary"] = DefaultNone):
 
-        self.type = "Action.OpenUrl"
         self.title = title
         self.url = url
         self.id = id
@@ -54,8 +54,9 @@ class OpenUrl(Mixin):
 
 
 class Submit(Mixin):
-    __slots__ = ("type", "data", "associated_inputs", "title", "icon_url", "id", "style", "fallback",
+    __slots__ = ("data", "associated_inputs", "title", "icon_url", "id", "style", "fallback",
                  "tooltip", "is_enabled", "mode")
+    type = "Action.Submit"
     def __init__(self,
                  data: dict,
                  associated_inputs: Literal["auto", "none"] | None,
@@ -68,7 +69,6 @@ class Submit(Mixin):
                  is_enabled: bool = DefaultNone,
                  mode: Literal["primary", "secondary"] = DefaultNone):
 
-        self.type = "Action.ToggleVisibility"
         self.data = data
         self.associated_inputs = associated_inputs
         self.title = title
@@ -91,8 +91,9 @@ class TargetElement(Mixin):
 
 
 class ToggleVisibilty(Mixin):
-    __slots__ = ("type", "data", "target_elements", "icon_url", "title", "id", "style", "fallback",
+    __slots__ = ("data", "target_elements", "icon_url", "title", "id", "style", "fallback",
                  "tooltip", "is_enabled", "mode")
+    type = "Action.ToggleVisibility"
     def __init__(self,
                  data: str | dict,
                  target_elements: ListLike[TargetElement],
@@ -105,7 +106,6 @@ class ToggleVisibilty(Mixin):
                  is_enabled: bool = DefaultNone,
                  mode: Literal["primary", "secondary"] = DefaultNone):
 
-        self.type = "Input.ToggleVisibility"
         self.data = data
         self.target_elements = target_elements
         self.icon_url = icon_url
@@ -119,7 +119,9 @@ class ToggleVisibilty(Mixin):
 
     
 class Execute(Mixin):
-    __slots__ = ()
+    __slots__ = ("verb", "data", "associated_inputs", "title", "icon_url", "id", "style", "fallback",
+                 "tooltip", "is_enabled", "mode")
+    type = "Action.Execute"
     def __init__(self,
                  verb: str = DefaultNone,
                  data: dict = DefaultNone,
@@ -133,7 +135,6 @@ class Execute(Mixin):
                  is_enabled: bool = DefaultNone,
                  mode: Literal["primary", "secondary"] = DefaultNone):
         
-        self.type = "Input.Execute"
         self.verb = verb
         self.data = data
         self.associated_inputs = associated_inputs

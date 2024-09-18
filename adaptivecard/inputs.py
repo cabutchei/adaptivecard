@@ -5,9 +5,10 @@ from adaptivecard._mixin import Mixin
 
 
 class Text(Mixin):
-    __slots__ = ("type", "id", "is_multiline", "max_length", "placeholder",
+    __slots__ = ("id", "is_multiline", "max_length", "placeholder",
                  "regex", "style", "inline_action", "value", "wrap", "error_message",
                  "is_required", "label", "fallback", "height", "separator", "spacing", "is_visible")
+    type = "Input.Text"
 
     def __init__(self,
                  id: str,
@@ -28,7 +29,6 @@ class Text(Mixin):
                                   "padding"] | None = DefaultNone,
                  is_visible: bool = DefaultNone,
                  ):
-        self.type = "Input.Text"
         self.id = id
         self.is_multiline = is_multiline
         self.max_length = max_length
@@ -48,10 +48,10 @@ class Text(Mixin):
 
 
 class Number(Mixin):
-    __slots__ = ("type", "id", "max", "min", "placeholder",
+    __slots__ = ("id", "max", "min", "placeholder",
                  "value", "wrap", "error_message", "is_required", "label", "fallback",
                  "height", "separator", "spacing", "is_visible")
-
+    type = "Input.Number"
     def __init__(self,
                  id: str,
                  max: int = DefaultNone,
@@ -69,7 +69,6 @@ class Number(Mixin):
                  is_visible: bool = DefaultNone,
                  ):
 
-        self.type = "Input.Number"
         self.id = id
         self.max = max
         self.min = min
@@ -86,8 +85,9 @@ class Number(Mixin):
 
 
 class Date(Mixin):
-    __slots__ = ("type", "id", "max", "min", "placeholder", "value", "error_message", "is_required",
+    __slots__ = ("id", "max", "min", "placeholder", "value", "error_message", "is_required",
                  "label", "fallback", "height", "separator", "spacing", "is_visible")
+    type = "Input.Date"
     def __init__(self,
                  id: str,
                  max: str = DefaultNone,
@@ -104,7 +104,6 @@ class Date(Mixin):
                                   "padding"] | None = DefaultNone,
                  is_visible: bool = DefaultNone,) -> None:
 
-        self.type = "Input.Date"
         self.id = id
         self.max = max
         self.min = min
@@ -121,8 +120,9 @@ class Date(Mixin):
 
 
 class Time(Mixin):
-    __slots__ = ("type", "id", "max", "min", "placeholder", "value", "error_message", "is_required",
+    __slots__ = ("id", "max", "min", "placeholder", "value", "error_message", "is_required",
                  "label", "fallback", "height", "separator", "spacing", "is_visible")
+    type = "Input.Time"
     def __init__(self,
                  id: str,
                  max: str = DefaultNone,
@@ -139,7 +139,6 @@ class Time(Mixin):
                                   "padding"] | None = DefaultNone,
                  is_visible: bool = DefaultNone):
 
-        self.type = "Input.Time"
         self.id = id
         self.max = max
         self.min = min
@@ -156,22 +155,23 @@ class Time(Mixin):
 
 
 class DataQuery(Mixin):
-    __slots__ = ("type", "dataset", "count", "skip")
+    __slots__ = ("dataset", "count", "skip")
+    type = "Data.Query"
     def __init__(self,
                  dataset: str,
                  count: int = DefaultNone,
                  skip: int = DefaultNone
                  ):
 
-        self.type = "Data.Query"
         self.dataset = dataset
         self.count = count
         self.skip = skip
 
 
 class Toggle(Mixin):
-    __slots__ = ('type', 'title', 'id', 'value', 'value_off', 'value_on', 'wrap', 'error_message',
+    __slots__ = ('title', 'id', 'value', 'value_off', 'value_on', 'wrap', 'error_message',
                  'is_required', 'label', 'fallback', 'height', 'separator', 'spacing', 'is_visible')
+    type = "Input.Toggle"
     def __init__(self,
                  title: str,
                  id: str,
@@ -189,7 +189,6 @@ class Toggle(Mixin):
                                   "padding"] | None = DefaultNone,
                  is_visible: bool = DefaultNone):
 
-        self.type = "Input.Toggle"
         self.title = title
         self.id = id
         self.value = value
@@ -217,9 +216,10 @@ class Choice(Mixin):
 
 
 class ChoiceSet(Mixin):
-    __slots__ = ("type", "id", "choices", "choices_data", "is_multiselect", "style", "value",
+    __slots__ = ("id", "choices", "choices_data", "is_multiselect", "style", "value",
                  "placeholder", "wrap", "error_message", "is_required", "label", "fallback",
                  "height", "separator", "spacing", "is_visible")
+    type = "Input.ChoiceSet"
     def __init__(self,
                  id: str,
                  choices: Choice| ListLike[Choice] = DefaultNone,
@@ -240,7 +240,6 @@ class ChoiceSet(Mixin):
                  is_visible: bool = DefaultNone,
                  ):
 
-        self.type = "Input.ChoiceSet"
         self.id = id
         if choices is DefaultNone:
             choices = ChoiceList()
