@@ -3,7 +3,7 @@ from sys import maxsize
 import adaptivecard._base_types as _base_types
 from adaptivecard._mixin import Mixin
 from adaptivecard.card_elements import TextBlock
-from adaptivecard._utils import convert_to_pixel_string, raise_invalid_pixel_error
+from adaptivecard._utils import try_get_pixel_string
 from adaptivecard._typing import ListLike, DefaultNone, ElementList, ColumnList, RowList, CellList
 
 
@@ -88,7 +88,7 @@ class Container(Mixin):
             elif isinstance(__value, _base_types.Element):
                 __value = ElementList([__value])
         elif __name == "min_height":
-            __value = convert_to_pixel_string(__value)
+            __value = try_get_pixel_string(__value, __name)
         return super().__setattr__(__name, __value)
 
 
@@ -175,7 +175,7 @@ class Column(Mixin):
             __value = items
 
         elif __name in ("min_height", "width"):
-            __value = convert_to_pixel_string(__value)
+            __value = try_get_pixel_string(__value, __name)
         return super().__setattr__(__name, __value)
 
 
@@ -257,7 +257,7 @@ class ColumnSet(Mixin):
                 columns.append(item)
             __value = columns
         elif __name == "min_height":
-            __value = convert_to_pixel_string(__value)
+            __value = try_get_pixel_string(__value, __name)
         return super().__setattr__(__name, __value)
 
 
@@ -331,9 +331,7 @@ class TableCell(Mixin):
                 items.append(TextBlock(__value))
             __value = items
         elif __name == "min_height":
-            min_height = __value
-            min_height = convert_to_pixel_string(min_height)
-            __value = min_height
+            __value = try_get_pixel_string(__value, __name)
         return super().__setattr__(__name, __value)
 
 
@@ -350,7 +348,8 @@ class TableRow(Mixin):
         self.style = style
     
     def append(self, __object: _base_types.Element | Any, /):
-        if not isinstance(__object, TableCell): __object = TableCell(__object)
+        if not isinstance(__object, TableCell):
+            __object = TableCell(__object)
         self.cells.append(__object)
 
     @overload

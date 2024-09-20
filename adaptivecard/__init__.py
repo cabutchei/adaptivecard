@@ -5,7 +5,6 @@ from adaptivecard._typing import ListLike, DefaultNone, ElementList
 
 
 
-
 class Content(Mixin):
     """Content é o elemento que recebe o AdaptiveCard e é adicionado à lista atachments, atributo de Message"""
     __slots__ = ("content_type", "content")

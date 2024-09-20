@@ -2,8 +2,7 @@ from typing import Any, Literal
 import adaptivecard._base_types as _base_types
 from adaptivecard._typing import DefaultNone
 from adaptivecard._mixin import Mixin
-from adaptivecard._utils import convert_to_pixel_string, raise_invalid_pixel_error
-
+from adaptivecard._utils import try_get_pixel_string
 
 
 class TextBlock(Mixin):
@@ -101,18 +100,10 @@ class Image(Mixin):
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "width":
             width = __value
-            try:
-                width = convert_to_pixel_string(width)
-            except ValueError:
-                raise_invalid_pixel_error(__name, width)
+            width = try_get_pixel_string(width, __name)
             __value = width
-        elif __name == "height":
-            if __value not in ["auto", "stretch"]:
-                if isinstance(__value, (str, int)):
-                    try:
-                        __value = convert_to_pixel_string(__value)
-                    except ValueError:
-                        raise_invalid_pixel_error()
+        elif __name == "height" and __value not in ["auto", "stretch"]:
+            __value = try_get_pixel_string(__value, __name)
         return super().__setattr__(__name, __value)
 
 

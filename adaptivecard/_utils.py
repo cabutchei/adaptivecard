@@ -2,18 +2,20 @@ from json import dump
 from adaptivecard._typing import DefaultNone
 
 
-def raise_invalid_pixel_error(arg_name: str, arg_value):
-    msg = f"argument '{arg_name}' must be an int or a numeric string ending with 'px', got '{arg_value}' instead"
-    if isinstance(arg_value, str):
-        raise ValueError(msg)
-    else:
-        raise TypeError(msg)
+
+def try_get_pixel_string(s: int | str, name: str):
+    """Attempts to convert `s` by calling get_pixel_string. Raises if it can't"""
+    msg = f"'{name}' must be an int or a numeric string ending with 'px', got '{s}' instead"
+    try:
+        return get_pixel_string(s)
+    except (TypeError, ValueError) as e:
+        raise e.__class__(msg)
 
 
 def get_pixel_string(s: int | str):
     """Returns a string-formatted version of s ("{s}px"). Leaves s unchanged if s is DefaultNone."""
     if s is DefaultNone:
-        s = s
+        pass
     elif isinstance(s, str):
         if not s.replace('px', '').isdecimal():
             raise ValueError("invalid pixel string")
@@ -24,11 +26,6 @@ def get_pixel_string(s: int | str):
         raise TypeError("invalid type")
     return s
 
-def convert_to_pixel_string(s: int | str):
-    try:
-        return get_pixel_string(s)
-    except (TypeError, ValueError):
-        raise_invalid_pixel_error()
 
 def camel_to_snake(s: str):
     l = list(s)
