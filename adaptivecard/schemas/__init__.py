@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+path = Path(__file__).parent / "schema.json"
 
-with open(Path(".") / "schemas" / "schema.json") as f:
+with open(path) as f:
     schema = json.load(f)
