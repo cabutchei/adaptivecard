@@ -1,1 +1,1 @@
-include requirements.txt /schemas/schema.json
+include requirements.txt adaptivecard/schemas/schema.json
