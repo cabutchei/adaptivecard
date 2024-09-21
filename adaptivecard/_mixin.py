@@ -2,7 +2,7 @@ from typing import Any
 from adaptivecard._typing import DefaultNone
 from adaptivecard._base_types import Element, Choice
 from adaptivecard._utils import snake_to_camel, save_json
-from adaptivecard._type_checker import check_types, check_type, get_validation_schema_for_property
+from adaptivecard._type_checker import check_type, get_validation_schema_for_property
 from adaptivecard.schemas import schema
 
 
