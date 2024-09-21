@@ -499,7 +499,8 @@ class Table(Mixin):
         return lstring
 
     def __str__(self):
-        lstring = f"[{',\n'.join([str(row) for row in self.rows])}]"
+        lstring = ',\n'.join([str(row) for row in self.rows])
+        lstring = f"[{lstring}]"
         return lstring
 
     def __iter__(self):
