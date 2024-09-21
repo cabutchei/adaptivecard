@@ -12,7 +12,7 @@ class TextBlock(Mixin):
                  'height', 'separator', 'spacing', 'id', 'is_visible')
     type = "TextBlock"
     def __init__(self,
-                 text: Any,
+                 text: Any = "",
                  color: Literal["default", "dark", "light", "accent", "good", "warning", "attention"] = DefaultNone,
                  font_type: Literal["default", "monospace"] = DefaultNone,
                  horizontal_alignment: Literal["left", "center", "right"] = DefaultNone,
