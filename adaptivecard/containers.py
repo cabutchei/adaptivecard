@@ -493,12 +493,14 @@ class Table(Mixin):
         return len(self.rows)
     
     def __repr__(self):
-        lstring = ", ".join([row.__repr__() for row in self.rows])
+        s = " " * 6
+        lstring = f",\n{s}".join([row.__repr__() for row in self.rows])
         lstring = f"{self.__class__.__name__}({lstring})"
         return lstring
 
     def __str__(self):
-        lstring = f"[{', '.join([str(row) for row in self.rows])}]"
+        lstring = ',\n'.join([str(row) for row in self.rows])
+        lstring = f"[{lstring}]"
         return lstring
 
     def __iter__(self):

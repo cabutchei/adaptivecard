@@ -1,9 +1,9 @@
 from typing import Any
 from adaptivecard._typing import DefaultNone
 from adaptivecard._base_types import Element, Choice
-from adaptivecard._utils import snake_to_camel, get_schema_path
-from adaptivecard._type_checker import check_types, check_type, get_validation_schema_for_property
-from adaptivecard.schemas.schema import schema
+from adaptivecard._utils import snake_to_camel, save_json
+from adaptivecard._type_checker import check_type, get_validation_schema_for_property
+from adaptivecard.schemas import schema
 
 
 class Mixin:
@@ -23,6 +23,13 @@ class Mixin:
                 attr_value = attr_value if attr_value is not None else "none"
                 dic[camel_formated_attr_name] = attr_value
         return dic
+
+    def to_json(self, path_name: str, indent: int = 4):
+        save_json(path=path_name, obj=self.to_dict(), indent=indent)
+    
+    def set_attributes(self, **kwargs):
+        for name, value in kwargs.items():
+            self.__setattr__(name, value)
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "type":

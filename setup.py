@@ -27,5 +27,7 @@ setup(
         "Operating System :: Unix",
         "Operating System :: MacOS :: MacOS X",
         "Operating System :: Microsoft :: Windows",
-    ]
+    ],
+    include_package_data=True,
+    package_data={'': ['schemas/schema.json']},
 )
