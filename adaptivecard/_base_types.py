@@ -77,6 +77,10 @@ class Image(Element):
     pass
 
 
+class ImageSet(Element):
+    pass
+
+
 class Text(Element):
     pass
 
@@ -118,6 +122,7 @@ Element.register(Column)
 Element.register(Container)
 Element.register(TextBlock)
 Element.register(Image)
+Element.register(ImageSet)
 Element.register(Message)
 Element.register(Content)
 Element.register(Action)

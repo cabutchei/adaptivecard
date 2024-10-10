@@ -32,6 +32,7 @@ type_checker = (
          "ColumnSet": is_type(_base_types.ColumnSet),
          "Column": is_type(_base_types.Column),
          "Image": is_type(_base_types.Image),
+         "ImageSet": is_type(_base_types.ImageSet),
          "Input.Text": is_type(_base_types.Text),
          "Input.Number": is_type(_base_types.Number),
          "Input.Date": is_type(_base_types.Date),

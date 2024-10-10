@@ -1,6 +1,5 @@
 import pytest
 from adaptivecard.containers import Container, ColumnSet, Column, Table, TableRow, ActionSet
-from adaptivecard.exceptions import *
 
 
 class Test:
@@ -12,6 +11,7 @@ class Test:
             container.style = "wrong value"
         with pytest.raises(AttributeError):
             container.wrong_attribute = "value"
+        container = Container(ColumnSet([[1],[2],[2]]))
 
     def test_column_set(self):
         column_set = ColumnSet()
