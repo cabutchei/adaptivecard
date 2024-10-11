@@ -12,9 +12,9 @@ class Container(Mixin):
     """A grouping of elements. Containers are useful for grouping a number of related elements
     into one structure. All elements inside a container will inherit its styling attributes
     upon rendering of the card."""
+    type = "Container"
     __slots__ = ('items', 'style', 'vertical_content_alignment', 'bleed', 'min_height',
                  'rtl', 'height', 'separator', 'spacing', 'id', 'is_visible')
-    type = "Container"
     def __init__(self,
                  items: _base_types.Element | ListLike[_base_types.Element] = DefaultNone,
                  style: Literal["default", "emphasis", "good", "attention", "warning", "accent"] = DefaultNone,
@@ -91,13 +91,17 @@ class Container(Mixin):
             __value = try_get_pixel_string(__value, __name)
         return super().__setattr__(__name, __value)
 
+    def set_attributes_on_children(self, **kwargs):
+        for child in self:
+            child.set_attributes(**kwargs)
+
 
 class Column(Mixin):
     """A column container. Columns must be grouped inside a ColumnSet."""
+    type = "Column"
     __slots__ = ('items', 'background_image', 'bleed', 'fallback', 'min_height',
                  'rtl', 'separator', 'spacing', 'style', 'vertical_content_alignment', 'rtl',
                  'width', 'id', 'is_visible')
-    type = "Column"
     def __init__(self,
                  items: _base_types.Element | ListLike[_base_types.Element | Any] | Any = DefaultNone,
                  background_image = DefaultNone,
@@ -181,12 +185,16 @@ class Column(Mixin):
                     __value += "px"
         return super().__setattr__(__name, __value)
 
+    def set_attributes_on_children(self, **kwargs):
+        for child in self:
+            child.set_attributes(**kwargs)
+
 
 class ColumnSet(Mixin):
     """A container for columns."""
+    type = 'ColumnSet'
     __slots__ = ('columns', 'style', 'bleed', 'min_height', 'horizontal_alignment', 'height',
                  'separator', 'spacing', 'id', 'is_visible')
-    type = 'ColumnSet'
     def __init__(self,
                  columns: ListLike[Column | ListLike[Any]] = DefaultNone,
                  select_action: _base_types.Execute | _base_types.OpenUrl | _base_types.Submit
@@ -263,11 +271,14 @@ class ColumnSet(Mixin):
             __value = try_get_pixel_string(__value, __name)
         return super().__setattr__(__name, __value)
 
+    def set_attributes_on_children(self, **kwargs):
+        for child in self:
+            child.set_attributes(**kwargs)
 
 class TableCell(Mixin):
+    type = "TableCell"
     __slots__ = ('items', 'select_action', 'style', 'vertical_alignment', 'bleed',
                  'background_image', 'min_height', 'rtl')
-    type = "TableCell"
     def __init__(self,
                  items: Any | ListLike[Any] = DefaultNone,
                  select_action: _base_types.Execute | _base_types.OpenUrl | _base_types.Submit
@@ -339,8 +350,8 @@ class TableCell(Mixin):
 
 
 class TableRow(Mixin):
-    __slots__ = ("cells", "style")
     type = "TableRow"
+    __slots__ = ("cells", "style")
     def __init__(self,
                  cells: ListLike[Any] = DefaultNone,
                  style: Literal["default", "emphasis", "good", "attention", "warning",
@@ -415,10 +426,10 @@ class TableRow(Mixin):
 
 
 class Table(Mixin):
+    type = "Table"
     __slots__ = ('columns', 'rows', 'first_row_as_header', 'show_grid_lines', 'grid_style',
                  'horizontal_cell_content_alignment', 'vertical_cell_content_alignment', 'fallback', 'height',
                  'separator', 'spacing', 'id', 'is_visible')
-    type = "Table"
     def __init__(self,
                  rows: ListLike[ListLike] = DefaultNone,
                  first_row_as_header: bool = DefaultNone,
@@ -524,8 +535,8 @@ class Table(Mixin):
 
 
 class ActionSet(Mixin):
-    __slots__ = ("actions", "fallback", "height", "separator", "spacing", "id", "is_visible")
     type = "ActionSet"
+    __slots__ = ("actions", "fallback", "height", "separator", "spacing", "id", "is_visible")
     def __init__(self,
                  actions: _base_types.Action | ListLike[_base_types.Action] = DefaultNone,
                  fallback: _base_types.Element = DefaultNone,
