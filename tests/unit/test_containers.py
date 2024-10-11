@@ -12,6 +12,10 @@ class Test:
         with pytest.raises(AttributeError):
             container.wrong_attribute = "value"
         container = Container(ColumnSet([[1],[2],[2]]))
+    
+    def test_column(self):
+        column = Column(width="aUto")
+        column.width = "stretch"
 
     def test_column_set(self):
         column_set = ColumnSet()

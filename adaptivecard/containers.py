@@ -113,7 +113,7 @@ class Column(Mixin):
                  style: Literal["default", "emphasis", "good", "attention", "warning",
                                 "accent"] = DefaultNone,
                  vertical_content_alignment: Literal["top", "center", "bottom"] = DefaultNone,
-                 width: str | int = DefaultNone,
+                 width: str | int | Literal["auto", "stretch"] = DefaultNone,
                  id: str = DefaultNone,
                  is_visible: bool = DefaultNone):
 
@@ -175,7 +175,10 @@ class Column(Mixin):
             __value = items
 
         elif __name in ("min_height", "width"):
-            __value = try_get_pixel_string(__value, __name)
+            if isinstance(__value, str):
+                __value = __value.lower()
+                if __value.isdigit():
+                    __value += "px"
         return super().__setattr__(__name, __value)
 
 
