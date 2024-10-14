@@ -56,6 +56,9 @@ class Container(Mixin):
         for element in elements:
             self.append(element)
 
+    def __len__(self):
+        return self.items.__len__()
+
     def __iter__(self):
         return self.items.__iter__()
 
@@ -236,6 +239,9 @@ class ColumnSet(Mixin):
         for column in columns:
             self.append(column)
 
+    def __len__(self):
+        return self.columns.__len__()
+
     def __iter__(self):
         return self.columns.__iter__()
 
@@ -403,7 +409,7 @@ class TableRow(Mixin):
         return super().__setattr__(__name, __value)
 
     def __len__(self):
-        return len(self.cells)
+        return self.cells.__len__()
 
     def __iter__(self):
         return self.cells.__iter__()
@@ -504,7 +510,7 @@ class Table(Mixin):
         return dic
     
     def __len__(self):
-        return len(self.rows)
+        return self.rows.__len__()
     
     def __repr__(self):
         s = " " * 6
@@ -556,6 +562,9 @@ class ActionSet(Mixin):
         self.spacing = spacing
         self.id = id
         self.is_visible = is_visible
+
+    def __len__(self):
+        return self.actions.__len__()
 
     @overload
     def __getitem__(self, __i: int):
