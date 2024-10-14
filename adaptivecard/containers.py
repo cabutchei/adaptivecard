@@ -52,7 +52,7 @@ class Container(Mixin):
             element = TextBlock(element)
         self.items.append(element)
 
-    def append_all(self, elements: Iterable[_base_types.Element]):
+    def extend(self, elements: Iterable[_base_types.Element]):
         for element in elements:
             self.append(element)
 
@@ -91,7 +91,7 @@ class Container(Mixin):
             __value = try_get_pixel_string(__value, __name)
         return super().__setattr__(__name, __value)
 
-    def set_attributes_on_children(self, **kwargs):
+    def set_attributes_for_children(self, **kwargs):
         for child in self:
             child.set_attributes(**kwargs)
 
@@ -143,7 +143,7 @@ class Column(Mixin):
             element = TextBlock(element)
         self.items.append(element)
 
-    def append_all(self, elements: Iterable[_base_types.Element]):
+    def extend(self, elements: Iterable[_base_types.Element]):
         for element in elements:
             self.append(element)
 
@@ -185,7 +185,7 @@ class Column(Mixin):
                     __value += "px"
         return super().__setattr__(__name, __value)
 
-    def set_attributes_on_children(self, **kwargs):
+    def set_attributes_for_children(self, **kwargs):
         for child in self:
             child.set_attributes(**kwargs)
 
@@ -228,9 +228,13 @@ class ColumnSet(Mixin):
     def append(self, column: Column | ListLike):
         if isinstance(column, ListLike):
             column = Column(column)
-        if not isinstance(column, Column, ListLike):
+        if not isinstance(column, (Column, ListLike)):
             raise TypeError(f"Expected Column or list-like object, got {type(column).__name__} instead")
         self.columns.append(column)
+
+    def extend(self, columns: Iterable[_base_types.Column]):
+        for column in columns:
+            self.append(column)
 
     def __iter__(self):
         return self.columns.__iter__()
@@ -271,7 +275,7 @@ class ColumnSet(Mixin):
             __value = try_get_pixel_string(__value, __name)
         return super().__setattr__(__name, __value)
 
-    def set_attributes_on_children(self, **kwargs):
+    def set_attributes_for_children(self, **kwargs):
         for child in self:
             child.set_attributes(**kwargs)
 
@@ -485,10 +489,6 @@ class Table(Mixin):
         if not isinstance(row, TableRow):
             row = TableRow(row)
         self.rows.append(row)
-
-    def append_all(self, rows: Iterable[_base_types.TableRow]):
-        for row in rows:
-            self.append(row)
     
     # custom to_dict para lidar com o formato atípico do atributo columns dentro do json
     def to_dict(self):
@@ -575,6 +575,10 @@ class ActionSet(Mixin):
         if not isinstance(action, _base_types.Action):
             raise TypeError("Can only append objetcs of type Action")
         self.actions.append(action)
+
+    def extend(self, actions: Iterable[_base_types.Element]):
+        for action in actions:
+            self.append(action)
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name == "actions":

@@ -64,6 +64,9 @@ class TypedList(list):
     def insert(self, __index: SupportsIndex, __object: Any) -> None:
         _check_type(__object, self._types)
         return super().insert(__index, __object)
+    def extend(self, elements: Iterable[Element]) -> None:
+        for element in elements:    
+            self.append(element)
     def __setitem__(self, __key, __value, /):
         _check_type(__value, self._types)
         return super().__setitem__(__key, __value)
